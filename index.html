@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeutschLernen — 초급 독일어 학습 플랫폼</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <h1>DeutschLernen</h1>
+          <span>초급 독일어 학습</span>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard" id="btn-dashboard">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span>대시보드</span>
+        </button>
+        <button class="nav-item" data-tab="vocabulary" id="btn-vocabulary">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>단어장</span>
+        </button>
+        <button class="nav-item" data-tab="grammar" id="btn-grammar">
+          <i class="fa-solid fa-spell-check"></i>
+          <span>문법</span>
+        </button>
+        <button class="nav-item" data-tab="texts" id="btn-texts">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>본문</span>
+        </button>
+        <button class="nav-item" data-tab="quizzes" id="btn-quizzes">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>연습문제</span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="theme-toggle" id="theme-toggle">
+          <i class="fa-solid fa-moon"></i>
+          <span>다크 모드</span>
+        </div>
+        <div class="user-info">
+          <div class="avatar">DE</div>
+          <div class="details">
+            <span class="name">학습자</span>
+            <span class="role">독일어 초급 과정</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="top-header">
+        <div class="search-bar-container">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="global-search" placeholder="단어, 문법 개념 검색...">
+        </div>
+        <div class="header-actions">
+          <div class="status-indicator">
+            <span class="dot pulse"></span>
+            <span id="load-status">데이터 로딩 중...</span>
+          </div>
+          <button class="action-btn" id="btn-api-settings" title="AI 설정">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+          <button class="action-btn" id="btn-tts-settings" title="음성 설정">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content Pages Container -->
+      <div class="page-container">
+        
+        <!-- DASHBOARD PAGE -->
+        <section class="page-section active" id="page-dashboard">
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <h2>Willkommen! 다시 만나서 반가워요. 👋</h2>
+              <p>마크다운 교재 요약을 바탕으로 생성된 학습 시스템입니다. 단어 암기, 문법 학습, 본문 독해, 그리고 대화형 퀴즈까지 함께해 보세요!</p>
+            </div>
+            <div class="welcome-graphic">
+              <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="icon-wrap color-blue"><i class="fa-solid fa-book"></i></div>
+              <div class="stat-info">
+                <span class="label">총 등록 어휘</span>
+                <h3 id="stat-total-vocab">0</h3>
+                <span class="subtext">모든 장별 단어 합계</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="icon-wrap color-green"><i class="fa-solid fa-spell-check"></i></div>
+              <div class="stat-info">
+                <span class="label">문법 요약 챕터</span>
+                <h3 id="stat-total-grammar">0</h3>
+                <span class="subtext">구조화된 핵심 규칙</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="icon-wrap color-purple"><i class="fa-solid fa-file-lines"></i></div>
+              <div class="stat-info">
+                <span class="label">수록 본문 대화</span>
+                <h3 id="stat-total-texts">0</h3>
+                <span class="subtext">실전 Lektion 대화문</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="icon-wrap color-amber"><i class="fa-solid fa-circle-question"></i></div>
+              <div class="stat-info">
+                <span class="label">연습 퀴즈 세트</span>
+                <h3 id="stat-total-quizzes">0</h3>
+                <span class="subtext">채점 가능한 연습문제</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="dashboard-details">
+            <div class="dashboard-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3><i class="fa-solid fa-layer-group"></i> 장별 바로가기 (Lektionen)</h3>
+                </div>
+                <div class="chapter-list-grid" id="chapter-list-container">
+                  <!-- Dynamically filled -->
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3><i class="fa-solid fa-circle-check"></i> 나의 학습 현황</h3>
+                </div>
+                <div class="progress-details">
+                  <div class="progress-item">
+                    <div class="progress-info">
+                      <span>단어장 암기</span>
+                      <span id="progress-vocab-text">0/0 암기 완료</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar" id="progress-vocab" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  <div class="progress-item">
+                    <div class="progress-info">
+                      <span>퀴즈 정답률</span>
+                      <span id="progress-quiz-text">0% 완료</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar" id="progress-quiz" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="dashboard-tip">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <div>
+                      <strong>독일어 학습 팁:</strong>
+                      <p>단어장 메뉴에서 "플래시 카드 모드"를 활용해 어휘를 확인하고, TTS 음성 버튼을 눌러 원어민 발음을 듣고 따라 해 보세요!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- VOCABULARY PAGE -->
+        <section class="page-section" id="page-vocabulary">
+          <div class="section-title-bar">
+            <div>
+              <h2>단어장 (Wortschatz)</h2>
+              <p>장별 핵심 어휘를 학습하고 암기 상태를 표시해 보세요.</p>
+            </div>
+            <div class="view-toggle-container">
+              <button class="toggle-btn active" id="btn-vocab-list"><i class="fa-solid fa-list"></i> 목록 보기</button>
+              <button class="toggle-btn" id="btn-vocab-card"><i class="fa-solid fa-clone"></i> 플래시 카드</button>
+            </div>
+          </div>
+          
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="select-vocab-chapter">단원 선택</label>
+              <select id="select-vocab-chapter" class="custom-select">
+                <option value="all">전체보기</option>
+                <!-- Filled dynamically -->
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="select-vocab-status">암기 상태</label>
+              <select id="select-vocab-status" class="custom-select">
+                <option value="all">전체</option>
+                <option value="unlearned">미암기</option>
+                <option value="learned">암기 완료</option>
+              </select>
+            </div>
+            <div class="vocab-stats">
+              <span id="vocab-learned-count">0 / 0</span>
+              <span class="badge">암기 완료</span>
+            </div>
+          </div>
+          
+          <!-- Vocab List View -->
+          <div id="vocab-list-container" class="vocab-list-view">
+            <!-- Dynamically filled -->
+          </div>
+          
+          <!-- Vocab Card View -->
+          <div id="vocab-card-container" class="vocab-card-view" style="display: none;">
+            <div class="card-controls-top" style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+              <button class="btn btn-secondary" id="btn-shuffle-cards"><i class="fa-solid fa-shuffle"></i> 순서 섞기</button>
+            </div>
+            <div class="card-carousel">
+              <button class="carousel-nav" id="btn-prev-card"><i class="fa-solid fa-chevron-left"></i></button>
+              
+              <div class="flashcard-wrapper">
+                <div class="flashcard" id="flashcard">
+                  <div class="card-face card-front">
+                    <span class="card-category" id="card-group">모음 a / ä</span>
+                    <h3 class="card-word" id="card-word-de">da</h3>
+                    <div class="card-actions">
+                      <button class="card-sound-btn" id="btn-card-tts"><i class="fa-solid fa-volume-high"></i></button>
+                    </div>
+                    <span class="card-hint">카드를 탭하여 뜻 보기</span>
+                  </div>
+                  <div class="card-face card-back">
+                    <span class="card-category">의미 & 비고</span>
+                    <h3 class="card-word-kr" id="card-word-kr">there (거기, 그곳에)</h3>
+                    <p class="card-note" id="card-note">adv.</p>
+                    <div class="card-learned-toggle">
+                      <button class="btn btn-primary" id="btn-card-toggle-learned">암기 완료 표시</button>
+                    </div>
+                    <span class="card-hint">카드를 탭하여 원어 보기</span>
+                  </div>
+                </div>
+              </div>
+              
+              <button class="carousel-nav" id="btn-next-card"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="carousel-indicator" id="card-indicator">
+              카드 1 / 10
+            </div>
+          </div>
+        </section>
+        
+        <!-- GRAMMAR PAGE -->
+        <section class="page-section" id="page-grammar">
+          <div class="section-title-bar">
+            <div>
+              <h2>문법 규칙 (Grammatik)</h2>
+              <p>핵심 문법 규칙과 예외 사항, 표 요약을 편리하게 확인할 수 있습니다.</p>
+            </div>
+          </div>
+          
+          <div class="grammar-layout">
+            <aside class="grammar-sidebar">
+              <div class="grammar-nav-list" id="grammar-nav-container">
+                <!-- Dynamically filled with titles -->
+              </div>
+            </aside>
+            <article class="grammar-content panel" id="grammar-content-container">
+              <!-- Dynamically filled with selected grammar content -->
+              <div class="empty-state">
+                <i class="fa-solid fa-spell-check"></i>
+                <p>왼쪽 메뉴에서 학습할 문법 주제를 선택하세요.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+        
+        <!-- TEXTS PAGE -->
+        <section class="page-section" id="page-texts">
+          <div class="section-title-bar">
+            <div>
+              <h2>본문 대화 (Dialoge)</h2>
+              <p>본문 대화를 읽고 들으면서 실전 회화를 익혀 보세요.</p>
+            </div>
+            <div class="filter-group-header" style="display: flex; gap: 15px; align-items: center;">
+              <label class="toggle-switch-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: var(--text-secondary);">
+                <span id="text-translate-status">해석 안보기</span>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="toggle-text-translation">
+                  <span class="slider round"></span>
+                </div>
+              </label>
+              <select id="select-text-chapter" class="custom-select">
+                <!-- Filled dynamically -->
+              </select>
+            </div>
+          </div>
+          
+          <div class="text-reader-container">
+            <div class="text-navigator">
+              <button class="btn" id="btn-prev-text"><i class="fa-solid fa-arrow-left"></i> 이전 Lektion</button>
+              <button class="btn" id="btn-next-text">다음 Lektion <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            
+            <div class="dialog-panel panel" id="dialog-panel-container">
+              <!-- Dynamically filled with dialogue -->
+            </div>
+          </div>
+        </section>
+        
+        <!-- QUIZZES PAGE -->
+        <section class="page-section" id="page-quizzes">
+          <div class="section-title-bar">
+            <div>
+              <h2>연습문제 퀴즈 (Übungen)</h2>
+              <p>공부한 어휘와 문법을 바탕으로 연습문제를 풀어보고 채점해 보세요.</p>
+            </div>
+            <div class="filter-group-header">
+              <select id="select-quiz-chapter" class="custom-select">
+                <!-- Filled dynamically -->
+              </select>
+            </div>
+          </div>
+          
+          <div class="quiz-container">
+            <div class="quiz-sidebar panel">
+              <h3>Übung 선택</h3>
+              <div class="quiz-list" id="quiz-list-container">
+                <!-- Dynamic list of exercises -->
+              </div>
+              <div class="ai-generate-wrapper" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <label for="ai-quiz-count" style="font-size: 12px; color: var(--text-secondary);">문제 개수:</label>
+                  <input type="number" id="ai-quiz-count" value="5" min="1" max="20" style="width: 60px; padding: 4px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); text-align: center;">
+                </div>
+                <button class="btn btn-primary" id="btn-generate-ai-quiz" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> AI 문제 만들기
+                </button>
+              </div>
+            </div>
+            
+            <div class="quiz-content panel">
+              <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h3 id="quiz-title">퀴즈를 선택해 주세요.</h3>
+                  <span class="quiz-subtitle" id="quiz-description"></span>
+                </div>
+                <button id="btn-delete-ai-quiz" class="btn btn-secondary" style="display: none; border-color: var(--color-danger); color: var(--color-danger); padding: 6px 12px; font-size: 12px;">
+                  <i class="fa-solid fa-trash"></i> 삭제
+                </button>
+              </div>
+              
+              <div class="quiz-body" id="quiz-body-container">
+                <!-- Dynamic quiz rendering -->
+                <div class="empty-state">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <p>왼쪽 목록에서 풀고 싶은 연습문제를 선택해 주세요.</p>
+                </div>
+              </div>
+              
+              <div class="quiz-footer" id="quiz-footer-container" style="display: none;">
+                <div class="quiz-score-panel" id="quiz-score-panel" style="display: none;">
+                  <span class="score-text" id="quiz-score-text">점수: 0 / 0 (0%)</span>
+                </div>
+                <div class="quiz-actions">
+                  <button class="btn btn-secondary" id="btn-quiz-reset">다시 풀기</button>
+                  <button class="btn btn-primary" id="btn-quiz-submit">정답 확인</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </main>
+    
+  </div>
+
+  <!-- TTS Settings Modal -->
+  <div class="modal" id="modal-tts-settings">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-gears"></i> 음성 설정 (TTS Settings)</h3>
+        <button class="close-btn" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>독일어 및 한국어 텍스트를 읽어줄 음성 엔진을 설정합니다.</p>
+        <div class="form-group">
+          <label for="select-tts-de-voice">독일어(DE) 목소리</label>
+          <select id="select-tts-de-voice" class="custom-select">
+            <!-- Dynamic voices -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="select-tts-rate">읽기 속도</label>
+          <input type="range" id="select-tts-rate" min="0.5" max="1.5" step="0.1" value="0.9">
+          <span class="range-val" id="tts-rate-val">0.9x</span>
+        </div>
+        
+        <div class="tts-test-box">
+          <button class="btn btn-secondary" id="btn-test-tts">테스트 음성 듣기 (Hallo, wie geht's?)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Loading Overlay -->
+  <div class="modal" id="modal-ai-loading">
+    <div class="modal-content" style="max-width: 400px; text-align: center; background: transparent; box-shadow: none; border: none;">
+      <div class="ai-loading-spinner" style="font-size: 3rem; color: var(--color-primary); margin-bottom: 20px;">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+      </div>
+      <h3 style="color: white; margin-bottom: 10px;">AI가 문제를 생성하고 있습니다...</h3>
+      <p id="ai-loading-status" style="color: rgba(255, 255, 255, 0.8);">현재 챕터의 어휘와 문법을 분석 중입니다.</p>
+    </div>
+  </div>
+
+  <!-- Dictionary Tooltip -->
+  <div id="dict-tooltip" class="dict-tooltip">
+    <div class="dict-header">
+      <span id="dict-word" class="dict-word">Word</span>
+      <button id="dict-tts" class="action-btn-small" title="발음 듣기"><i class="fa-solid fa-volume-high"></i></button>
+    </div>
+    <div id="dict-meaning" class="dict-meaning">뜻을 불러옵니다...</div>
+    <div id="dict-note" class="dict-note"></div>
+    <button id="dict-ai-btn" class="dict-ai-btn"><i class="fa-solid fa-robot"></i> 문맥으로 정확한 뜻 찾기</button>
+  </div>
+
+  <!-- Floating German Keyboard -->
+  <div id="german-keyboard" class="floating-keyboard">
+    <div class="keyboard-header">특수문자</div>
+    <div class="keyboard-keys">
+      <button class="key-btn">ä</button>
+      <button class="key-btn">ö</button>
+      <button class="key-btn">ü</button>
+      <button class="key-btn">ß</button>
+      <button class="key-btn">Ä</button>
+      <button class="key-btn">Ö</button>
+      <button class="key-btn">Ü</button>
+    </div>
+  </div>
+
+  <!-- API Settings Modal -->
+  <div id="api-settings-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 450px;">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-gear"></i> AI 기능 설정</h2>
+        <button class="close-btn" id="btn-close-api-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px; line-height: 1.5;">
+          <strong>AI 문제 생성 기능</strong>을 사용하려면 DeepSeek API 키가 필요합니다. 입력된 키는 사용자의 기기(브라우저)에만 안전하게 저장됩니다.<br>
+          <span style="color: var(--primary-light);">단어 뜻 사전 툴팁은 API 키 없이도 100% 무료로 사용할 수 있습니다!</span>
+        </p>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="deepseek-api-key" style="display: block; margin-bottom: 8px; color: var(--text-primary); font-weight: 500;">DeepSeek API Key</label>
+          <input type="password" id="deepseek-api-key" class="quiz-input" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; background: var(--bg-tertiary); color: white;" placeholder="sk-...">
+        </div>
+        <button id="btn-save-api-key" class="generate-btn" style="width: 100%;">저장하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
