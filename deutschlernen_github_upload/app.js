@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const hasApiKey = () => !!localStorage.getItem('deepseek_api_key');
 
+  const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[char]));
+
   const apiModal = document.getElementById('api-settings-modal');
   const apiKeyInput = document.getElementById('deepseek-api-key');
 
@@ -211,12 +219,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeSection) activeSection.classList.add('active');
   };
   
-  themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
+  const setTheme = (isLight, persist = false) => {
+    document.body.classList.toggle('light-theme', isLight);
     themeToggle.innerHTML = isLight 
       ? '<i class="fa-solid fa-sun"></i><span>라이트 모드</span>' 
       : '<i class="fa-solid fa-moon"></i><span>다크 모드</span>';
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+    if (persist) {
+      localStorage.setItem('deutschLernen_theme', isLight ? 'light' : 'dark');
+    }
+  };
+
+  themeToggle.setAttribute('role', 'button');
+  themeToggle.setAttribute('tabindex', '0');
+  setTheme(localStorage.getItem('deutschLernen_theme') === 'light');
+
+  themeToggle.addEventListener('click', () => {
+    setTheme(!document.body.classList.contains('light-theme'), true);
+  });
+
+  themeToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setTheme(!document.body.classList.contains('light-theme'), true);
+    }
   });
   
   // --- TTS Initialization & Settings ---
@@ -429,11 +455,15 @@ document.addEventListener('DOMContentLoaded', () => {
     html = blocks.map(b => {
       const trimmed = b.trim();
       if (!trimmed) return '';
-      if (trimmed.startsWith('<div') || trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<li') || trimmed.startsWith('<hr')) {
-        return trimmed;
+      if (trimmed.includes('<li>')) {
+        const listStartIdx = trimmed.indexOf('<li>');
+        const beforeList = trimmed.slice(0, listStartIdx).trim();
+        const listItems = trimmed.slice(listStartIdx).trim();
+        const beforeListHtml = beforeList ? `<p>${beforeList.replace(/\n/g, '<br>')}</p>` : '';
+        return `${beforeListHtml}<ul>${listItems}</ul>`;
       }
-      if (trimmed.startsWith('<li>')) {
-        return `<ul>${trimmed}</ul>`;
+      if (trimmed.startsWith('<div') || trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<hr')) {
+        return trimmed;
       }
       return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
     }).join('\n');
@@ -1029,18 +1059,28 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const wrapWordsInText = (text, contextKey = null) => {
-    const ctxAttr = contextKey ? ` data-context="${contextKey.replace(/"/g, '&quot;')}"` : '';
+    const ctxAttr = contextKey ? ` data-context="${escapeHtml(contextKey)}"` : '';
     return text.split(/([^a-zA-ZäöüßÄÖÜ]+)/).map(part => {
       if (/^[a-zA-ZäöüßÄÖÜ]+$/.test(part)) {
-        return `<span class="dialog-word"${ctxAttr}>${part}</span>`;
+        return `<span class="dialog-word"${ctxAttr}>${escapeHtml(part)}</span>`;
       }
-      return part;
+      return escapeHtml(part);
     }).join('');
   };
 
   // let activeDictWord = null; (already declared above or just declare context)
   let activeDictContext = "";
   let dictRequestToken = 0;
+
+  const isCurrentDictRequest = (requestToken, word) => {
+    const tooltip = document.getElementById('dict-tooltip');
+    return Boolean(
+      tooltip &&
+      tooltip.classList.contains('active') &&
+      dictRequestToken === requestToken &&
+      activeDictWord === word
+    );
+  };
   
   const showDictTooltip = (element, word, context = "") => {
     const requestToken = ++dictRequestToken;
@@ -1107,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Dynamic AI Dictionary Fallback
             fetchAIWordMeaning(word, context).then(res => {
                 // Check if tooltip is still open for the same word
-                if (dictRequestToken === requestToken && activeDictWord === word) {
+                if (isCurrentDictRequest(requestToken, word)) {
                     dictWordEl.textContent = res.baseForm || word;
                     dictMeaningEl.textContent = res.meaning;
                     if (res.note) {
@@ -1116,7 +1156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }).catch(err => {
-                if (dictRequestToken === requestToken && activeDictWord === word) {
+                if (isCurrentDictRequest(requestToken, word)) {
                     if (err.message === 'MISSING_API_KEY') {
                         dictMeaningEl.textContent = "AI 문맥 검색을 사용하려면 우측 상단 설정에서 API 키를 입력해주세요.";
                     } else {
@@ -1146,19 +1186,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('click', (e) => {
       const tooltip = document.getElementById('dict-tooltip');
+      const targetElement = e.target instanceof Element ? e.target : null;
       
       // 1. If clicked on a word, show tooltip
-      if (e.target.classList.contains('dialog-word')) {
-          let contextSentence = e.target.getAttribute('data-context');
+      const clickedWord = targetElement ? targetElement.closest('.dialog-word') : null;
+      if (clickedWord) {
+          let contextSentence = clickedWord.getAttribute('data-context');
           if (!contextSentence) {
-              contextSentence = e.target.parentNode.textContent.replace(/\s+/g, ' ').trim();
+              contextSentence = clickedWord.parentElement ? clickedWord.parentElement.textContent.replace(/\s+/g, ' ').trim() : '';
           }
-          showDictTooltip(e.target, e.target.textContent, contextSentence);
+          showDictTooltip(clickedWord, clickedWord.textContent, contextSentence);
           return; // Stop here so it doesn't close immediately
       }
       
       // 2. Otherwise, if clicking outside tooltip, close it
-      if (tooltip && !tooltip.contains(e.target) && e.target.id !== 'dict-tts' && e.target.parentNode.id !== 'dict-tts') {
+      const clickedDictTts = targetElement ? targetElement.closest('#dict-tts') : null;
+      if (tooltip && targetElement && !tooltip.contains(targetElement) && !clickedDictTts) {
+          dictRequestToken += 1;
+          activeDictWord = null;
+          activeDictContext = "";
           tooltip.classList.remove('active');
           document.querySelectorAll('.dialog-word.active').forEach(el => el.classList.remove('active'));
           document.querySelectorAll('.vocab-pool-tag.active').forEach(el => el.classList.remove('active'));
@@ -1166,6 +1212,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const fetchAIWordMeaning = async (word, context = "") => {
+    if (!hasApiKey()) {
+      throw new Error('MISSING_API_KEY');
+    }
+
     const lowerWord = word.toLowerCase();
     const cacheKey = context ? `${lowerWord}_${context}` : lowerWord;
     
@@ -1234,18 +1284,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const dictMeaningEl = document.getElementById('dict-meaning');
       const dictNoteEl = document.getElementById('dict-note');
       const dictWordEl = document.getElementById('dict-word');
+      const requestWord = activeDictWord;
+      const requestContext = activeDictContext;
+      const requestToken = ++dictRequestToken;
+
+      if (!requestWord) return;
       
       dictMeaningEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 문맥 분석 중...';
       dictNoteEl.style.display = 'none';
       
-      fetchAIWordMeaning(activeDictWord, activeDictContext).then(res => {
-          dictWordEl.textContent = res.baseForm || activeDictWord;
+      fetchAIWordMeaning(requestWord, requestContext).then(res => {
+          if (!isCurrentDictRequest(requestToken, requestWord)) return;
+
+          dictWordEl.textContent = res.baseForm || requestWord;
           dictMeaningEl.textContent = res.meaning;
           if (res.note) {
               dictNoteEl.textContent = res.note;
               dictNoteEl.style.display = 'block';
           }
       }).catch(err => {
+          if (!isCurrentDictRequest(requestToken, requestWord)) return;
+
           if (err.message === 'MISSING_API_KEY') {
               dictMeaningEl.textContent = "우측 상단 ⚙️ 설정에서 API 키를 먼저 입력해주세요.";
           } else {
@@ -1282,6 +1341,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Collect all lines
     const linesToTranslate = textObj.contents.filter(i => i.type === 'narration' || i.type === 'dialog').map(i => i.text);
     if (linesToTranslate.length === 0) return {};
+    if (!hasApiKey()) {
+      throw new Error('MISSING_API_KEY');
+    }
     
     const prompt = `다음은 독일어 교재의 본문 대화입니다. 각 문장을 자연스러운 한국어로 번역하여 JSON 배열 형태로 반환하세요.
 원본 배열:
@@ -1349,7 +1411,11 @@ ${JSON.stringify(linesToTranslate, null, 2)}
         renderActiveText(); // Re-render with translations
         return;
       } catch (err) {
-        alert("본문 번역 중 오류가 발생했습니다.");
+        if (err.message === 'MISSING_API_KEY') {
+          alert("AI 본문 번역을 사용하려면 우측 상단 설정에서 DeepSeek API 키를 입력해주세요.");
+        } else {
+          alert("본문 번역 중 오류가 발생했습니다.");
+        }
         toggleTextTranslation.checked = false;
         textTranslateStatus.textContent = '해석 안보기';
         renderActiveText();
@@ -1830,7 +1896,7 @@ ${JSON.stringify(linesToTranslate, null, 2)}
       vocabListContainer.innerHTML = `
         <div class="empty-state" style="grid-column: span 3; padding: 40px 0;">
           <i class="fa-solid fa-folder-open"></i>
-          <p>"${query}"에 대한 검색 결과가 없습니다.</p>
+          <p>"${escapeHtml(query)}"에 대한 검색 결과가 없습니다.</p>
         </div>
       `;
       return;
