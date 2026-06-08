@@ -70,6 +70,18 @@
   padding: 0;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 body {
   font-family: 'Outfit', 'Noto Sans KR', sans-serif;
   background-color: var(--bg-primary);
@@ -1271,10 +1283,10 @@ body {
   transition: .4s;
 }
 .toggle-switch input:checked + .slider {
-  background-color: var(--primary);
+  background-color: var(--color-primary);
 }
 .toggle-switch input:focus + .slider {
-  box-shadow: 0 0 1px var(--primary);
+  box-shadow: 0 0 1px var(--color-primary);
 }
 .toggle-switch input:checked + .slider:before {
   transform: translateX(20px);
@@ -2047,14 +2059,53 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: padding var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
 }
 
 .keyboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.keyboard-title,
+.keyboard-collapsed-label {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-secondary);
-  text-align: center;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.keyboard-collapsed-label {
+  display: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.keyboard-toggle {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.keyboard-toggle:hover,
+.keyboard-toggle:focus-visible {
+  color: #fff;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  outline: none;
 }
 
 .keyboard-keys {
@@ -2082,4 +2133,35 @@ body {
   background-color: var(--color-primary);
   color: #fff;
   border-color: var(--color-primary);
+}
+
+.floating-keyboard.collapsed {
+  padding: 8px 10px;
+  gap: 0;
+}
+
+.floating-keyboard.collapsed .keyboard-title,
+.floating-keyboard.collapsed .keyboard-keys {
+  display: none;
+}
+
+.floating-keyboard.collapsed .keyboard-collapsed-label {
+  display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .floating-keyboard {
+    right: 12px;
+    bottom: 12px;
+    padding: 10px;
+  }
+
+  .keyboard-keys {
+    max-width: 116px;
+  }
+
+  .key-btn {
+    width: 30px;
+    height: 30px;
+  }
 }

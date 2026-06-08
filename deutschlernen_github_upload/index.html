@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260608-keyboard">
 </head>
 <body class="dark-theme">
 
@@ -449,15 +449,22 @@
 
   <!-- Floating German Keyboard -->
   <div id="german-keyboard" class="floating-keyboard">
-    <div class="keyboard-header">특수문자</div>
+    <div class="keyboard-header">
+      <span class="keyboard-title">특수문자</span>
+      <span class="keyboard-collapsed-label" aria-hidden="true">äöü</span>
+      <button type="button" id="keyboard-toggle" class="keyboard-toggle" aria-expanded="true" title="특수문자 입력창 접기">
+        <i class="fa-solid fa-chevron-down"></i>
+        <span class="sr-only">특수문자 입력창 접기</span>
+      </button>
+    </div>
     <div class="keyboard-keys">
-      <button class="key-btn">ä</button>
-      <button class="key-btn">ö</button>
-      <button class="key-btn">ü</button>
-      <button class="key-btn">ß</button>
-      <button class="key-btn">Ä</button>
-      <button class="key-btn">Ö</button>
-      <button class="key-btn">Ü</button>
+      <button type="button" class="key-btn" aria-label="ä 입력">ä</button>
+      <button type="button" class="key-btn" aria-label="ö 입력">ö</button>
+      <button type="button" class="key-btn" aria-label="ü 입력">ü</button>
+      <button type="button" class="key-btn" aria-label="ß 입력">ß</button>
+      <button type="button" class="key-btn" aria-label="Ä 입력">Ä</button>
+      <button type="button" class="key-btn" aria-label="Ö 입력">Ö</button>
+      <button type="button" class="key-btn" aria-label="Ü 입력">Ü</button>
     </div>
   </div>
 
@@ -482,6 +489,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260608-keyboard"></script>
 </body>
 </html>

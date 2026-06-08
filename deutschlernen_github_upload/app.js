@@ -1849,6 +1849,39 @@ ${JSON.stringify(linesToTranslate, null, 2)}
 
   // --- Floating German Keyboard Logic ---
   let lastFocusedInput = null;
+  const germanKeyboard = document.getElementById('german-keyboard');
+  const keyboardToggle = document.getElementById('keyboard-toggle');
+
+  const setKeyboardCollapsed = (collapsed, persist = false) => {
+    if (!germanKeyboard || !keyboardToggle) return;
+
+    germanKeyboard.classList.toggle('collapsed', collapsed);
+    keyboardToggle.setAttribute('aria-expanded', String(!collapsed));
+    keyboardToggle.setAttribute('title', collapsed ? '특수문자 입력창 펼치기' : '특수문자 입력창 접기');
+
+    const icon = keyboardToggle.querySelector('i');
+    const label = keyboardToggle.querySelector('.sr-only');
+    if (icon) {
+      icon.className = collapsed ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+    }
+    if (label) {
+      label.textContent = collapsed ? '특수문자 입력창 펼치기' : '특수문자 입력창 접기';
+    }
+
+    if (persist) {
+      localStorage.setItem('deutschLernen_keyboardCollapsed', collapsed ? 'true' : 'false');
+    }
+  };
+
+  setKeyboardCollapsed(localStorage.getItem('deutschLernen_keyboardCollapsed') === 'true');
+
+  if (keyboardToggle) {
+    keyboardToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setKeyboardCollapsed(!germanKeyboard.classList.contains('collapsed'), true);
+    });
+  }
 
   document.addEventListener('focusin', (e) => {
     if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
@@ -1860,7 +1893,7 @@ ${JSON.stringify(linesToTranslate, null, 2)}
   keyboardKeys.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault(); // Prevent losing focus
-      if (lastFocusedInput) {
+      if (lastFocusedInput && !lastFocusedInput.disabled && !lastFocusedInput.readOnly) {
         const char = btn.textContent;
         const start = lastFocusedInput.selectionStart || 0;
         const end = lastFocusedInput.selectionEnd || 0;
@@ -1868,6 +1901,7 @@ ${JSON.stringify(linesToTranslate, null, 2)}
         lastFocusedInput.value = val.substring(0, start) + char + val.substring(end);
         lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + 1;
         lastFocusedInput.focus();
+        lastFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
     });
   });
