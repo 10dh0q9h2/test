@@ -1003,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('click', () => {
         // Regex check if it has German text
         const text = el.textContent.trim();
-        if (/[a-zA-ZäöüßÄÖÜ]/.test(text)) {
+        if (/[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ]/.test(text)) {
           speakGerman(text);
         }
       });
@@ -1012,12 +1012,17 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // --- Dictionary Tooltip Helper ---
   let activeDictWord = null;
+  const latinWordChars = 'A-Za-zÀ-ÖØ-öø-ÿĀ-ſ';
+  const latinWordOnlyRe = new RegExp(`^[${latinWordChars}]+$`);
+  const latinWordSplitRe = new RegExp(`([^${latinWordChars}]+)`);
+  const nonLatinWordRe = new RegExp(`[^${latinWordChars}]+`, 'g');
+
   const normalizeLookupText = (text) => {
     return (text || '')
       .toString()
       .toLowerCase()
       .normalize('NFC')
-      .replace(/[^a-zA-ZäöüßÄÖÜ]+/g, ' ')
+      .replace(nonLatinWordRe, ' ')
       .trim()
       .replace(/\s+/g, ' ');
   };
@@ -1038,7 +1043,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let match = vocabData.find(v => getVocabLookupForms(v).includes(cleanPhrase));
     if (match) return match;
 
-    match = vocabData.find(v => v.word.split(',')[0].toLowerCase() === cleanWord);
+    match = vocabData.find(v => normalizeLookupText(v.word.split(',')[0]) === cleanWord);
     if (match) return match;
 
     const stemMatch = cleanWord.match(/^(.*?)(e|st|t|en|n|s)?$/);
@@ -1046,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const stem = stemMatch[1];
       if (stem.length >= 3) {
         match = vocabData.find(v => {
-            const vBase = v.word.split(',')[0].toLowerCase();
+            const vBase = normalizeLookupText(v.word.split(',')[0]);
             return vBase === stem || vBase.startsWith(stem);
         });
         if (match) return match;
@@ -1060,8 +1065,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const wrapWordsInText = (text, contextKey = null) => {
     const ctxAttr = contextKey ? ` data-context="${escapeHtml(contextKey)}"` : '';
-    return text.split(/([^a-zA-ZäöüßÄÖÜ]+)/).map(part => {
-      if (/^[a-zA-ZäöüßÄÖÜ]+$/.test(part)) {
+    return text.split(latinWordSplitRe).map(part => {
+      if (latinWordOnlyRe.test(part)) {
         return `<span class="dialog-word"${ctxAttr}>${escapeHtml(part)}</span>`;
       }
       return escapeHtml(part);
