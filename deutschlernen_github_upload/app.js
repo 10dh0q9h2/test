@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!key) throw new Error('MISSING_API_KEY');
     return key;
   };
+  const hasApiKey = () => !!localStorage.getItem('deepseek_api_key');
 
   const apiModal = document.getElementById('api-settings-modal');
   const apiKeyInput = document.getElementById('deepseek-api-key');
@@ -354,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   const parseGrammar = (mdText) => {
-    const sections = mdText.split(/(?=## )/);
+    const sections = mdText.split(/(?=^## )/m);
     const parsed = [];
     sections.forEach(sec => {
       const clean = sec.trim();
@@ -442,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   const parseTexts = (mdText) => {
-    const sections = mdText.split(/(?=## Lektion )/);
+    const sections = mdText.split(/(?=^## Lektion )/m);
     const parsed = [];
     
     sections.forEach(sec => {
@@ -581,6 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chapters = quizSection.split(/\n(?=## )/);
     const parsedQuizzes = [];
     
+    const duplicateCounts = {};
+    
     chapters.forEach(ch => {
       const chClean = ch.trim();
       if (!chClean) return;
@@ -643,11 +646,11 @@ document.addEventListener('DOMContentLoaded', () => {
           matchedAnswers = solutions[chNum][uNum];
         }
         
-        // Sometimes Chapter 12 has multiple sections with the same Übung number (e.g. Grammatik, Wortschatz).
-        // If we encounter a duplicate uNum, append a suffix.
         let finalUNum = uNum || 'info';
-        if (parsedQuizzes.find(q => q.chapterNum === chNum && q.ubungNum === finalUNum)) {
-           finalUNum += '-' + Math.random().toString(36).substr(2, 4);
+        const duplicateKey = `${chNum || 'unknown'}-${finalUNum}`;
+        duplicateCounts[duplicateKey] = (duplicateCounts[duplicateKey] || 0) + 1;
+        if (duplicateCounts[duplicateKey] > 1) {
+           finalUNum += `-${duplicateCounts[duplicateKey]}`;
         }
         
         parsedQuizzes.push({
@@ -712,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Vocab progress
     const totalVocab = vocabData.length;
     if (totalVocab > 0) {
-      const learnedCount = Object.keys(userProgress.learnedWords).filter(k => userProgress.learnedWords[k]).length;
+      const learnedCount = vocabData.filter(v => userProgress.learnedWords[v.word]).length;
       const vocabPercent = Math.round((learnedCount / totalVocab) * 100);
       progressVocabBar.style.width = `${vocabPercent}%`;
       progressVocabText.textContent = `${learnedCount}/${totalVocab} 암기 완료 (${vocabPercent}%)`;
@@ -720,14 +723,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Quiz progress
-    const totalQuizzes = quizData.filter(q => q.answers && q.answers.length > 0).length;
+    const gradableQuizzes = quizData.filter(q => q.answers && q.answers.length > 0);
+    const gradableQuizIds = new Set(gradableQuizzes.map(q => q.id));
+    const solvedEntries = Object.entries(userProgress.solvedQuizzes)
+      .map(([id, score]) => [id, Number(score)])
+      .filter(([id, score]) => gradableQuizIds.has(id) && Number.isFinite(score));
+    const totalQuizzes = gradableQuizzes.length;
     if (totalQuizzes > 0) {
-      const solvedKeys = Object.keys(userProgress.solvedQuizzes);
-      const avgScore = solvedKeys.length > 0 
-        ? Math.round(solvedKeys.reduce((acc, k) => acc + userProgress.solvedQuizzes[k], 0) / totalQuizzes)
+      const completionPercent = Math.round((solvedEntries.length / totalQuizzes) * 100);
+      const avgScore = solvedEntries.length > 0 
+        ? Math.round(solvedEntries.reduce((acc, [, score]) => acc + score, 0) / solvedEntries.length)
         : 0;
-      progressQuizBar.style.width = `${Math.min(avgScore, 100)}%`;
-      progressQuizText.textContent = `${solvedKeys.length}/${totalQuizzes} 해결 완료 (평균 점수: ${avgScore}%)`;
+      progressQuizBar.style.width = `${completionPercent}%`;
+      progressQuizText.textContent = `${solvedEntries.length}/${totalQuizzes} 해결 완료 (평균 점수: ${avgScore}%)`;
     }
   };
   
@@ -1032,8 +1040,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // let activeDictWord = null; (already declared above or just declare context)
   let activeDictContext = "";
+  let dictRequestToken = 0;
   
   const showDictTooltip = (element, word, context = "") => {
+    const requestToken = ++dictRequestToken;
     document.querySelectorAll('.dialog-word.active').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.vocab-pool-tag.active').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
@@ -1083,27 +1093,38 @@ document.addEventListener('DOMContentLoaded', () => {
         activeDictContext = context;
     } else {
         dictWordEl.textContent = word;
-        dictMeaningEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI로 뜻 검색 중...';
         dictNoteEl.style.display = 'none';
         activeDictWord = word;
         activeDictContext = context;
-        
-        // Dynamic AI Dictionary Fallback
-        fetchAIWordMeaning(word, context).then(res => {
-            // Check if tooltip is still open for the same word
-            if (activeDictWord === word) {
-                dictWordEl.textContent = res.baseForm || word;
-                dictMeaningEl.textContent = res.meaning;
-                if (res.note) {
-                    dictNoteEl.textContent = res.note;
-                    dictNoteEl.style.display = 'block';
+
+        if (!hasApiKey()) {
+            dictMeaningEl.textContent = "단어장에 없는 단어입니다.";
+            dictNoteEl.textContent = "AI 문맥 검색은 우측 상단 설정에서 DeepSeek API 키를 입력하면 사용할 수 있습니다.";
+            dictNoteEl.style.display = 'block';
+        } else {
+            dictMeaningEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI로 뜻 검색 중...';
+            
+            // Dynamic AI Dictionary Fallback
+            fetchAIWordMeaning(word, context).then(res => {
+                // Check if tooltip is still open for the same word
+                if (dictRequestToken === requestToken && activeDictWord === word) {
+                    dictWordEl.textContent = res.baseForm || word;
+                    dictMeaningEl.textContent = res.meaning;
+                    if (res.note) {
+                        dictNoteEl.textContent = res.note;
+                        dictNoteEl.style.display = 'block';
+                    }
                 }
-            }
-        }).catch(err => {
-            if (activeDictWord === word) {
-                dictMeaningEl.textContent = "사전 검색 실패 (단어장에 없음)";
-            }
-        });
+            }).catch(err => {
+                if (dictRequestToken === requestToken && activeDictWord === word) {
+                    if (err.message === 'MISSING_API_KEY') {
+                        dictMeaningEl.textContent = "AI 문맥 검색을 사용하려면 우측 상단 설정에서 API 키를 입력해주세요.";
+                    } else {
+                        dictMeaningEl.textContent = "AI 문맥 검색 실패";
+                    }
+                }
+            });
+        }
     }
 
     const rect = element.getBoundingClientRect();
@@ -1398,7 +1419,8 @@ ${JSON.stringify(linesToTranslate, null, 2)}
         // Add speech play listener
         row.querySelector('.dialog-bubble').addEventListener('click', (e) => {
           if (e.target.classList.contains('dialog-word')) {
-            showDictTooltip(e.target, e.target.textContent);
+            e.stopPropagation();
+            showDictTooltip(e.target, e.target.textContent, item.text);
             return;
           }
           // Speak full dialog text, strip punctuation if needed
@@ -1486,6 +1508,7 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     // Show footer
     quizFooterContainer.style.display = 'flex';
     quizScorePanel.style.display = 'none';
+    const hasAnswerKey = quizObj.answers && quizObj.answers.length > 0;
     
     // AI Quiz Delete Button
     const btnDeleteAiQuiz = document.getElementById('btn-delete-ai-quiz');
@@ -1583,14 +1606,20 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     const newSubmitBtn = currentSubmitBtn.cloneNode(true);
     currentSubmitBtn.parentNode.replaceChild(newSubmitBtn, currentSubmitBtn);
     
-    newSubmitBtn.addEventListener('click', () => {
-      gradeQuiz(quizObj);
-    });
+    if (hasAnswerKey) {
+      newSubmitBtn.style.display = '';
+      newSubmitBtn.addEventListener('click', () => {
+        gradeQuiz(quizObj);
+      });
+    } else {
+      newSubmitBtn.style.display = 'none';
+    }
     
     // Reset listener
     const currentResetBtn = document.getElementById('btn-quiz-reset');
     const newResetBtn = currentResetBtn.cloneNode(true);
     currentResetBtn.parentNode.replaceChild(newResetBtn, currentResetBtn);
+    newResetBtn.textContent = hasAnswerKey ? '다시 풀기' : '입력 지우기';
     newResetBtn.addEventListener('click', () => {
       // Clear inputs
       quizBodyContainer.querySelectorAll('.quiz-input').forEach(i => {
@@ -1605,9 +1634,16 @@ ${JSON.stringify(linesToTranslate, null, 2)}
         r.className = 'quiz-question-row';
       });
       quizScorePanel.style.display = 'none';
+      if (!hasAnswerKey) {
+        quizScoreText.textContent = '정답이 없는 활동입니다. 시각표나 그림을 보고 직접 완성해 보세요.';
+        quizScorePanel.style.display = 'block';
+      }
     });
     
-    if (prevScore !== undefined) {
+    if (!hasAnswerKey) {
+      quizScoreText.textContent = '정답이 없는 활동입니다. 시각표나 그림을 보고 직접 완성해 보세요.';
+      quizScorePanel.style.display = 'block';
+    } else if (prevScore !== undefined) {
       // Fill previously solved or show notice
       quizScoreText.textContent = `이전에 해결한 퀴즈 (점수: ${prevScore}%)`;
       quizScorePanel.style.display = 'block';

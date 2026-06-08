@@ -1291,7 +1291,7 @@ body {
   color: var(--text-secondary);
   margin-top: 4px;
   padding-left: 10px;
-  border-left: 2px solid var(--primary-light);
+  border-left: 2px solid var(--color-primary);
   display: block;
 }
 
