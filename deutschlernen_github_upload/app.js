@@ -17,16 +17,41 @@ document.addEventListener('DOMContentLoaded', () => {
     "'": '&#39;'
   }[char]));
 
+  const containsHanCharacters = (value) => {
+    if (typeof value === 'string') {
+      return /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(value);
+    }
+    if (Array.isArray(value)) {
+      return value.some(containsHanCharacters);
+    }
+    if (value && typeof value === 'object') {
+      return Object.values(value).some(containsHanCharacters);
+    }
+    return false;
+  };
+
+  const isPlainObject = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
   const apiModal = document.getElementById('api-settings-modal');
   const apiKeyInput = document.getElementById('deepseek-api-key');
-
-  document.getElementById('btn-api-settings').addEventListener('click', () => {
+  const openApiModal = () => {
     apiKeyInput.value = localStorage.getItem('deepseek_api_key') || '';
     apiModal.style.display = 'flex';
+  };
+  const closeApiModal = () => {
+    apiModal.style.display = 'none';
+  };
+
+  document.getElementById('btn-api-settings').addEventListener('click', () => {
+    openApiModal();
   });
 
   document.getElementById('btn-close-api-modal').addEventListener('click', () => {
-    apiModal.style.display = 'none';
+    closeApiModal();
+  });
+
+  apiModal.addEventListener('click', (e) => {
+    if (e.target === apiModal) closeApiModal();
   });
 
   document.getElementById('btn-save-api-key').addEventListener('click', () => {
@@ -34,11 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (key) {
       localStorage.setItem('deepseek_api_key', key);
       alert('API 키가 안전하게 저장되었습니다.');
-      apiModal.style.display = 'none';
+      closeApiModal();
     } else {
       localStorage.removeItem('deepseek_api_key');
       alert('API 키가 삭제되었습니다.');
-      apiModal.style.display = 'none';
+      closeApiModal();
     }
   });
 
@@ -64,9 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('deutschLernen_aiQuizzes');
     if (saved) {
       try {
-        aiQuizzes = JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        const parsedList = Array.isArray(parsed) ? parsed : [];
+        aiQuizzes = parsedList
+          .map((quiz, idx) => normalizeStoredAiQuiz(quiz, idx))
+          .filter(Boolean);
+        if (aiQuizzes.length !== parsedList.length || JSON.stringify(aiQuizzes) !== JSON.stringify(parsedList)) {
+          saveAiQuizzes();
+        }
       } catch (e) {
         aiQuizzes = [];
+        saveAiQuizzes();
       }
     }
   };
@@ -81,6 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved) {
       try {
         aiDictCache = JSON.parse(saved);
+        const cleanedEntries = Object.entries(aiDictCache).filter(([, entry]) => !containsHanCharacters(entry));
+        if (cleanedEntries.length !== Object.keys(aiDictCache).length) {
+          aiDictCache = Object.fromEntries(cleanedEntries);
+          saveAiDictCache();
+        }
       } catch (e) {
         aiDictCache = {};
       }
@@ -97,6 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved) {
       try {
         textTranslations = JSON.parse(saved);
+        const cleanedEntries = Object.entries(textTranslations).filter(([, entry]) => !containsHanCharacters(entry));
+        if (cleanedEntries.length !== Object.keys(textTranslations).length) {
+          textTranslations = Object.fromEntries(cleanedEntries);
+          saveTextTranslations();
+        }
       } catch (e) {
         textTranslations = {};
       }
@@ -115,11 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('deutsch_lernen_progress');
     if (saved) {
       try {
-        userProgress = JSON.parse(saved);
-        if (!userProgress.learnedWords) userProgress.learnedWords = {};
-        if (!userProgress.solvedQuizzes) userProgress.solvedQuizzes = {};
+        const parsed = JSON.parse(saved);
+        userProgress = isPlainObject(parsed) ? parsed : { learnedWords: {}, solvedQuizzes: {} };
+        if (!isPlainObject(userProgress.learnedWords)) userProgress.learnedWords = {};
+        if (!isPlainObject(userProgress.solvedQuizzes)) userProgress.solvedQuizzes = {};
       } catch (e) {
         console.error('Error parsing progress', e);
+        userProgress = { learnedWords: {}, solvedQuizzes: {} };
       }
     }
   };
@@ -309,17 +354,41 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   // TTS Settings Events
-  btnTtsSettings.addEventListener('click', () => {
+  const openTtsModal = () => {
     modalTtsSettings.classList.add('active');
+  };
+  const closeTtsModal = () => {
+    modalTtsSettings.classList.remove('active');
+  };
+
+  btnTtsSettings.addEventListener('click', () => {
+    openTtsModal();
   });
   
   btnCloseModal.addEventListener('click', () => {
-    modalTtsSettings.classList.remove('active');
+    closeTtsModal();
   });
   
   window.addEventListener('click', (e) => {
     if (e.target === modalTtsSettings) {
-      modalTtsSettings.classList.remove('active');
+      closeTtsModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+
+    closeApiModal();
+    closeTtsModal();
+
+    const tooltip = document.getElementById('dict-tooltip');
+    if (tooltip && tooltip.classList.contains('active')) {
+      dictRequestToken += 1;
+      activeDictWord = null;
+      activeDictContext = "";
+      tooltip.classList.remove('active');
+      document.querySelectorAll('.dialog-word.active').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.vocab-pool-tag.active').forEach(el => el.classList.remove('active'));
     }
   });
   
@@ -785,6 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vocabListContainer.innerHTML = '';
     const chFilter = selectVocabChapter.value;
     const statusFilter = selectVocabStatus.value;
+    const query = globalSearchInput.value.trim().toLowerCase();
     
     const filtered = vocabData.filter(v => {
       const matchCh = (chFilter === 'all' || v.chapter === chFilter);
@@ -792,14 +862,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const matchStatus = (statusFilter === 'all' || 
                            (statusFilter === 'learned' && isLearned) || 
                            (statusFilter === 'unlearned' && !isLearned));
-      return matchCh && matchStatus;
+      const matchQuery = !query ||
+                         v.word.toLowerCase().includes(query) ||
+                         v.meaning.toLowerCase().includes(query) ||
+                         v.group.toLowerCase().includes(query) ||
+                         v.chapter.toLowerCase().includes(query) ||
+                         (v.note && v.note.toLowerCase().includes(query));
+      return matchCh && matchStatus && matchQuery;
     });
     
     if (filtered.length === 0) {
+      const emptyText = query ? `"${escapeHtml(query)}"에 대한 검색 결과가 없습니다.` : '필터에 맞는 단어가 없습니다.';
       vocabListContainer.innerHTML = `
         <div class="empty-state" style="grid-column: span 3; padding: 40px 0;">
           <i class="fa-solid fa-folder-open"></i>
-          <p>필터에 맞는 단어가 없습니다.</p>
+          <p>${emptyText}</p>
         </div>
       `;
       return;
@@ -807,21 +884,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     filtered.forEach(v => {
       const isLearned = !!userProgress.learnedWords[v.word];
+      const categoryLabel = query ? `${v.chapter} - ${v.group}` : v.group;
       const card = document.createElement('div');
       card.className = `vocab-item-card ${isLearned ? 'learned' : ''}`;
       card.innerHTML = `
         <div class="vocab-card-header">
-          <span class="vocab-category">${v.group}</span>
-          <button class="vocab-learned-btn" title="${isLearned ? '미암기로 변경' : '암기 완료로 변경'}">
+          <span class="vocab-category">${escapeHtml(categoryLabel)}</span>
+          <button class="vocab-learned-btn" title="${escapeHtml(isLearned ? '미암기로 변경' : '암기 완료로 변경')}">
             <i class="${isLearned ? 'fa-solid' : 'fa-regular'} fa-circle-check"></i>
           </button>
         </div>
         <h4 class="vocab-word-de">
-          ${v.word}
+          ${escapeHtml(v.word)}
           <button class="vocab-sound-btn" title="발음 듣기"><i class="fa-solid fa-volume-high"></i></button>
         </h4>
-        <p class="vocab-word-kr">${v.meaning}</p>
-        ${v.note ? `<span class="vocab-note">${v.note}</span>` : ''}
+        <p class="vocab-word-kr">${escapeHtml(v.meaning)}</p>
+        ${v.note ? `<span class="vocab-note">${escapeHtml(v.note)}</span>` : ''}
       `;
       
       // Toggle learned
@@ -1226,6 +1304,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isCurrentDictRequest(requestToken, word)) {
                     if (err.message === 'MISSING_API_KEY') {
                         dictMeaningEl.textContent = "AI 문맥 검색을 사용하려면 우측 상단 설정에서 API 키를 입력해주세요.";
+                    } else if (err.message === 'NON_KOREAN_RESULT') {
+                        dictMeaningEl.textContent = "한국어 뜻 생성에 실패했습니다. 다시 시도해주세요.";
                     } else {
                         dictMeaningEl.textContent = "AI 문맥 검색 실패";
                     }
@@ -1234,20 +1314,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const rect = element.getBoundingClientRect();
-    let top = rect.bottom + window.scrollY + 8;
-    let left = rect.left + window.scrollX - 20;
-    
     tooltip.classList.add('active');
     
     setTimeout(() => {
+        const rect = element.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
-        if (left + tooltipRect.width > window.innerWidth - 20) {
-            left = window.innerWidth - tooltipRect.width - 20;
+        const margin = 10;
+        let top = rect.bottom + 8;
+        let left = rect.left - 20;
+
+        if (rect.bottom + tooltipRect.height + 8 > window.innerHeight - margin) {
+            top = rect.top - tooltipRect.height - 8;
         }
-        if (left < 10) left = 10;
+        const minTop = margin;
+        const maxTop = window.innerHeight - tooltipRect.height - margin;
+        top = Math.min(Math.max(top, minTop), Math.max(minTop, maxTop));
+        if (left + tooltipRect.width > window.innerWidth - margin) {
+            left = window.innerWidth - tooltipRect.width - margin;
+        }
+        if (left < margin) {
+            left = margin;
+        }
+
         tooltip.style.top = `${top}px`;
         tooltip.style.left = `${left}px`;
+
+        const clampTooltipPosition = () => {
+            const finalRect = tooltip.getBoundingClientRect();
+            let finalTop = parseFloat(tooltip.style.top) || top;
+            let finalLeft = parseFloat(tooltip.style.left) || left;
+
+            if (finalRect.bottom > window.innerHeight - margin) {
+                finalTop -= finalRect.bottom - (window.innerHeight - margin);
+            }
+            if (finalRect.top < margin) {
+                finalTop += margin - finalRect.top;
+            }
+            if (finalRect.right > window.innerWidth - margin) {
+                finalLeft -= finalRect.right - (window.innerWidth - margin);
+            }
+            if (finalRect.left < margin) {
+                finalLeft += margin - finalRect.left;
+            }
+
+            tooltip.style.top = `${finalTop}px`;
+            tooltip.style.left = `${finalLeft}px`;
+        };
+
+        requestAnimationFrame(() => {
+            clampTooltipPosition();
+            requestAnimationFrame(clampTooltipPosition);
+        });
     }, 0);
   };
 
@@ -1297,12 +1414,14 @@ document.addEventListener('DOMContentLoaded', () => {
 이 문장에서 사용된 단어 '${word}'의 원형(기본형)과 이 문맥에 딱 맞는 한국어 뜻, 그리고 간단한 문법적 특징(예: 존칭 소유대명사, 격 변화 등)을 JSON 형태로 알려줘.
 조건:
 1. 마크다운 없이 JSON 형식만 출력할 것.
-2. 필드: "baseForm" (원형), "meaning" (한국어 뜻), "note" (간단한 설명)`;
+2. 필드: "baseForm" (원형), "meaning" (한국어 뜻), "note" (간단한 설명)
+3. meaning과 note는 반드시 자연스러운 한국어로 작성하고, 중국어/한자/번체/간체 문자를 절대 포함하지 말 것.`;
     } else {
       prompt = `독일어 문장 속 단어 '${word}'의 원형(기본형)과 가장 많이 쓰이는 한국어 뜻, 그리고 간단한 문법적 특징(예: 조동사, 명사의 성, 변화형 등)을 JSON 형태로 알려줘.
 조건:
 1. 마크다운 없이 JSON 형식만 출력할 것.
 2. 필드: "baseForm" (원형), "meaning" (한국어 뜻), "note" (간단한 설명)
+3. meaning과 note는 반드시 자연스러운 한국어로 작성하고, 중국어/한자/번체/간체 문자를 절대 포함하지 말 것.
 
 예시:
 {
@@ -1321,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify({
         model: 'deepseek-chat', // 툴팁의 빠른 반응속도를 위해 chat 모델 사용
         messages: [
-          { role: 'system', content: 'You are a helpful German-Korean dictionary API that outputs only valid JSON.' },
+          { role: 'system', content: 'You are a German-Korean dictionary API. Output only valid JSON. Korean fields must be in Hangul-based Korean, never Chinese or Han characters.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.1
@@ -1338,6 +1457,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     const result = JSON.parse(content);
+    if (containsHanCharacters(result)) {
+      throw new Error('NON_KOREAN_RESULT');
+    }
     
     // 2. Save to Cache
     aiDictCache[cacheKey] = result;
@@ -1374,6 +1496,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (err.message === 'MISSING_API_KEY') {
               dictMeaningEl.textContent = "우측 상단 ⚙️ 설정에서 API 키를 먼저 입력해주세요.";
+          } else if (err.message === 'NON_KOREAN_RESULT') {
+              dictMeaningEl.textContent = "한국어 뜻 생성에 실패했습니다. 다시 시도해주세요.";
           } else {
               dictMeaningEl.textContent = "AI 문맥 검색 실패";
           }
@@ -1418,7 +1542,8 @@ ${JSON.stringify(linesToTranslate, null, 2)}
 
 출력 조건:
 1. 순서와 개수를 원본과 정확히 일치시킬 것.
-2. ["번역문1", "번역문2", ...] 형식의 JSON 배열만 출력할 것. 마크다운(\`\`\`) 없이 출력.`;
+2. ["번역문1", "번역문2", ...] 형식의 JSON 배열만 출력할 것. 마크다운(\`\`\`) 없이 출력.
+3. 번역문은 반드시 자연스러운 한국어로 작성하고, 중국어/한자/번체/간체 문자를 절대 포함하지 말 것.`;
 
     const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
@@ -1429,7 +1554,7 @@ ${JSON.stringify(linesToTranslate, null, 2)}
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [
-          { role: 'system', content: 'You are a professional German to Korean translator. Output valid JSON array only.' },
+          { role: 'system', content: 'You are a professional German to Korean translator. Output a valid JSON array only. Use Hangul-based Korean only, never Chinese or Han characters.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.1
@@ -1443,6 +1568,9 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     else if (content.startsWith('```')) content = content.replace(/^```/, '').replace(/```$/, '').trim();
     
     const translatedArray = JSON.parse(content);
+    if (!Array.isArray(translatedArray) || containsHanCharacters(translatedArray)) {
+      throw new Error('NON_KOREAN_RESULT');
+    }
     const transDict = {};
     linesToTranslate.forEach((original, idx) => {
       transDict[original] = translatedArray[idx] || "번역 실패";
@@ -1480,6 +1608,8 @@ ${JSON.stringify(linesToTranslate, null, 2)}
       } catch (err) {
         if (err.message === 'MISSING_API_KEY') {
           alert("AI 본문 번역을 사용하려면 우측 상단 설정에서 DeepSeek API 키를 입력해주세요.");
+        } else if (err.message === 'NON_KOREAN_RESULT') {
+          alert("AI 번역 결과에 한국어가 아닌 문자가 포함되어 저장하지 않았습니다. 다시 시도해주세요.");
         } else {
           alert("본문 번역 중 오류가 발생했습니다.");
         }
@@ -1845,6 +1975,12 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     }
     
     const inputs = quizBodyContainer.querySelectorAll('.quiz-input');
+    if (inputs.length === 0) {
+      quizScoreText.textContent = '채점할 빈칸이 없습니다. 문제 형식을 확인해 주세요.';
+      quizScorePanel.style.display = 'block';
+      return;
+    }
+
     let correctCount = 0;
     
     inputs.forEach(input => {
@@ -1984,64 +2120,122 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     // Jump to vocabulary page to show matches
     switchTab('vocabulary');
     btnVocabList.click(); // switch to list view
-    
-    vocabListContainer.innerHTML = '';
-    const filtered = vocabData.filter(v => {
-      return v.word.toLowerCase().includes(query) || 
-             v.meaning.toLowerCase().includes(query) || 
-             v.group.toLowerCase().includes(query) ||
-             (v.note && v.note.toLowerCase().includes(query));
-    });
-    
-    if (filtered.length === 0) {
-      vocabListContainer.innerHTML = `
-        <div class="empty-state" style="grid-column: span 3; padding: 40px 0;">
-          <i class="fa-solid fa-folder-open"></i>
-          <p>"${escapeHtml(query)}"에 대한 검색 결과가 없습니다.</p>
-        </div>
-      `;
-      return;
-    }
-    
-    filtered.forEach(v => {
-      const isLearned = !!userProgress.learnedWords[v.word];
-      const card = document.createElement('div');
-      card.className = `vocab-item-card ${isLearned ? 'learned' : ''}`;
-      card.innerHTML = `
-        <div class="vocab-card-header">
-          <span class="vocab-category">${v.chapter} - ${v.group}</span>
-          <button class="vocab-learned-btn">
-            <i class="${isLearned ? 'fa-solid' : 'fa-regular'} fa-circle-check"></i>
-          </button>
-        </div>
-        <h4 class="vocab-word-de">
-          ${v.word}
-          <button class="vocab-sound-btn"><i class="fa-solid fa-volume-high"></i></button>
-        </h4>
-        <p class="vocab-word-kr">${v.meaning}</p>
-        ${v.note ? `<span class="vocab-note">${v.note}</span>` : ''}
-      `;
-      
-      card.querySelector('.vocab-learned-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        userProgress.learnedWords[v.word] = !userProgress.learnedWords[v.word];
-        saveUserProgress();
-        globalSearchInput.dispatchEvent(new Event('input')); // Re-run search
-      });
-      
-      card.querySelector('.vocab-sound-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        speakGerman(v.word.split(',')[0].split('/')[0].trim());
-      });
-      
-      vocabListContainer.appendChild(card);
-    });
+    renderVocabList();
   });
   
   // --- AI Quiz Generation Logic ---
   const btnGenerateAiQuiz = document.getElementById('btn-generate-ai-quiz');
   const modalAiLoading = document.getElementById('modal-ai-loading');
   const aiLoadingStatus = document.getElementById('ai-loading-status');
+
+  const clampNumber = (value, min, max, fallback) => {
+    const parsed = parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(max, Math.max(min, parsed));
+  };
+
+  const normalizeGeneratedQuizItems = (items) => {
+    if (!Array.isArray(items)) {
+      throw new Error('JSON 배열 포맷이 아닙니다.');
+    }
+
+    if (items.length === 0) {
+      throw new Error('생성된 문제가 없습니다.');
+    }
+
+    return items.map((item, idx) => {
+      if (!item || typeof item !== 'object') {
+        throw new Error(`${idx + 1}번 문제가 올바른 객체 형식이 아닙니다.`);
+      }
+
+      const text = String(item.text || '').trim();
+      const answer = String(item.answer || '').trim();
+      const blankCount = (text.match(/____+/g) || []).length;
+
+      if (!text || !answer) {
+        throw new Error(`${idx + 1}번 문제의 문장 또는 정답이 비어 있습니다.`);
+      }
+      if (blankCount !== 1) {
+        throw new Error(`${idx + 1}번 문제는 빈칸(____)을 정확히 1개 포함해야 합니다.`);
+      }
+      if (/[가-힣\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(text)) {
+        throw new Error(`${idx + 1}번 문제 문장에 한국어 또는 한자가 포함되어 있습니다.`);
+      }
+      if (/[가-힣\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/.test(answer)) {
+        throw new Error(`${idx + 1}번 정답에 한국어 또는 한자가 포함되어 있습니다.`);
+      }
+
+      return { text, answer };
+    });
+  };
+
+  const normalizeStoredAiQuiz = (quiz, idx) => {
+    if (!isPlainObject(quiz) || !Array.isArray(quiz.questions) || !Array.isArray(quiz.answers)) {
+      return null;
+    }
+
+    try {
+      const generatedItems = normalizeGeneratedQuizItems(
+        quiz.questions.map((q, qIdx) => ({
+          text: isPlainObject(q) ? q.text : '',
+          answer: quiz.answers[qIdx]
+        }))
+      );
+      const chapterTitle = typeof quiz.chapterTitle === 'string' && quiz.chapterTitle.trim() ? quiz.chapterTitle.trim() : null;
+      if (!chapterTitle) return null;
+
+      const id = typeof quiz.id === 'string' && quiz.id.startsWith('quiz-ai-') ? quiz.id : `quiz-ai-${Date.now()}-${idx}`;
+      const title = typeof quiz.title === 'string' && quiz.title.trim() ? quiz.title.trim() : `AI 연습문제`;
+      const chapterMatch = chapterTitle.match(/^(\d+)장/);
+
+      return {
+        id,
+        chapterNum: quiz.chapterNum || (chapterMatch ? chapterMatch[1] : 'AI'),
+        chapterTitle,
+        ubungNum: 'AI',
+        title,
+        questions: generatedItems.map((item, itemIdx) => ({
+          type: 'blank',
+          number: String(itemIdx + 1),
+          text: item.text
+        })),
+        options: [],
+        answers: generatedItems.map(item => item.answer)
+      };
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const sanitizeUserProgressForCurrentData = () => {
+    const validWords = new Set(vocabData.map(v => v.word));
+    const validQuizIds = new Set(quizData.map(q => q.id));
+    const cleanedLearnedWords = {};
+    const cleanedSolvedQuizzes = {};
+
+    Object.entries(userProgress.learnedWords || {}).forEach(([word, learned]) => {
+      if (validWords.has(word) && learned === true) {
+        cleanedLearnedWords[word] = true;
+      }
+    });
+
+    Object.entries(userProgress.solvedQuizzes || {}).forEach(([id, score]) => {
+      const numericScore = Number(score);
+      if (validQuizIds.has(id) && Number.isFinite(numericScore)) {
+        cleanedSolvedQuizzes[id] = Math.min(100, Math.max(0, Math.round(numericScore)));
+      }
+    });
+
+    const cleanedProgress = {
+      learnedWords: cleanedLearnedWords,
+      solvedQuizzes: cleanedSolvedQuizzes
+    };
+
+    if (JSON.stringify(cleanedProgress) !== JSON.stringify(userProgress)) {
+      userProgress = cleanedProgress;
+      localStorage.setItem('deutsch_lernen_progress', JSON.stringify(userProgress));
+    }
+  };
   
   if (btnGenerateAiQuiz) {
     btnGenerateAiQuiz.addEventListener('click', async () => {
@@ -2075,7 +2269,8 @@ ${JSON.stringify(linesToTranslate, null, 2)}
         .join(', ');
 
       const quizCountInput = document.getElementById('ai-quiz-count');
-      const numQuestions = quizCountInput ? (parseInt(quizCountInput.value, 10) || 5) : 5;
+      const numQuestions = quizCountInput ? clampNumber(quizCountInput.value, 1, 20, 5) : 5;
+      if (quizCountInput) quizCountInput.value = String(numQuestions);
 
       modalAiLoading.style.display = 'flex';
       aiLoadingStatus.textContent = 'API 요청 중입니다... (10~30초 소요될 수 있습니다.)';
@@ -2139,9 +2334,7 @@ ${currentChapterWords}
           throw new Error('JSON 파싱에 실패했습니다. AI가 형식을 맞추지 않았을 수 있습니다.');
         }
         
-        if (!Array.isArray(parsedJson)) {
-          throw new Error('JSON 배열 포맷이 아닙니다.');
-        }
+        const generatedItems = normalizeGeneratedQuizItems(parsedJson);
 
         // Add to quizData
         const newQuizId = `quiz-ai-${Date.now()}`;
@@ -2152,13 +2345,13 @@ ${currentChapterWords}
           chapterTitle: chapterFilter,
           ubungNum: 'AI',
           title: `AI 연습문제 (${nowStr})`,
-          questions: parsedJson.map((q, idx) => ({
+          questions: generatedItems.map((q, idx) => ({
              type: 'blank',
              number: (idx + 1).toString(),
              text: q.text
           })),
           options: [],
-          answers: parsedJson.map(q => q.answer) 
+          answers: generatedItems.map(q => q.answer) 
         };
 
         quizData.push(aiQuiz);
@@ -2209,6 +2402,7 @@ ${currentChapterWords}
       // Merge AI quizzes
       loadAiQuizzes();
       quizData = [...quizData, ...aiQuizzes];
+      sanitizeUserProgressForCurrentData();
       
       // Merge pre-generated translations
       if (textTransRes) {
