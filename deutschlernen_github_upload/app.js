@@ -995,18 +995,80 @@ document.addEventListener('DOMContentLoaded', () => {
       <h2>${grammarObj.title}</h2>
       ${renderGrammarMarkdown(grammarObj.content)}
     `;
+
+    wrapGrammarWords(grammarContentContainer, grammarObj.title);
     
     // Auto speech trigger for German sentences inside tables or bold items when hovered/clicked
     grammarContentContainer.querySelectorAll('strong').forEach(el => {
       el.style.cursor = 'pointer';
       el.title = '클릭하여 독일어 발음 듣기';
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (e) => {
+        if (e.target instanceof Element && e.target.closest('.dialog-word')) return;
         // Regex check if it has German text
         const text = el.textContent.trim();
         if (/[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ]/.test(text)) {
           speakGerman(text);
         }
       });
+    });
+  };
+
+  const getGrammarWordContext = (element, fallbackTitle) => {
+    const contextElement = element.closest('li, p, td, th, h2, h3, h4, .callout') || element.parentElement;
+    const contextText = contextElement ? contextElement.textContent.replace(/\s+/g, ' ').trim() : '';
+    return contextText || fallbackTitle || '';
+  };
+
+  const wrapGrammarWords = (root, fallbackTitle = '') => {
+    const textNodes = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const text = node.nodeValue || '';
+        const parent = node.parentElement;
+        if (!parent || !/[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ]/.test(text)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        if (parent.closest('.dialog-word, button, input, select, textarea, script, style, code, pre')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode);
+    }
+
+    textNodes.forEach(node => {
+      const parent = node.parentElement;
+      if (!parent) return;
+
+      const context = getGrammarWordContext(parent, fallbackTitle);
+      const fragment = document.createDocumentFragment();
+      const parts = (node.nodeValue || '').split(latinWordSplitRe);
+      let hasWrappedWord = false;
+
+      parts.forEach((part, idx) => {
+        const prevPart = parts[idx - 1] || '';
+        const nextPart = parts[idx + 1] || '';
+        const isHyphenFragment = prevPart.includes('-') || nextPart.includes('-');
+        const isKoreanAttachedGloss = /[가-힣]$/.test(prevPart) || /^[가-힣]/.test(nextPart);
+
+        if (latinWordOnlyRe.test(part) && normalizeLookupText(part).length >= 2 && !isHyphenFragment && !isKoreanAttachedGloss) {
+          const span = document.createElement('span');
+          span.className = 'dialog-word';
+          span.dataset.context = context;
+          span.textContent = part;
+          fragment.appendChild(span);
+          hasWrappedWord = true;
+        } else {
+          fragment.appendChild(document.createTextNode(part));
+        }
+      });
+
+      if (hasWrappedWord) {
+        node.parentNode.replaceChild(fragment, node);
+      }
     });
   };
   
