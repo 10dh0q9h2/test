@@ -1231,38 +1231,38 @@
 
 | 단어/표현 | 뜻 | 비고 |
 | :--- | :--- | :--- |
-| 0 | null | — |
-| 1 | ein(s) | — |
-| 2 | zwei | — |
-| 3 | drei | — |
-| 4 | vier | — |
-| 5 | fünf | — |
-| 6 | sechs | — |
-| 7 | sieben | — |
-| 8 | acht | — |
-| 9 | neun | — |
-| 10 | zehn | — |
-| 11 | elf | — |
-| 12 | zwölf | — |
-| 13 | dreizehn | — |
-| 14 | vierzehn | — |
-| 15 | fünfzehn | — |
-| 16 | sechzehn | s 빠짐 |
-| 17 | siebzehn | en 빠짐 |
-| 18 | achtzehn | — |
-| 19 | neunzehn | — |
-| 20 | zwanzig | — |
-| 21 | einundzwanzig | — |
-| 22 | zweiundzwanzig | — |
-| 30 | dreißig | — |
-| 40 | vierzig | — |
-| 50 | fünfzig | — |
-| 60 | sechzig | — |
-| 70 | siebzig | — |
-| 80 | achtzig | — |
-| 90 | neunzig | — |
-| 100 | hundert | — |
-| 101 | (ein)hunderteins | — |
+| null | 0, 영 | 숫자 |
+| ein(s) | 1, 하나 | 숫자 |
+| zwei | 2, 둘 | 숫자 |
+| drei | 3, 셋 | 숫자 |
+| vier | 4, 넷 | 숫자 |
+| fünf | 5, 다섯 | 숫자 |
+| sechs | 6, 여섯 | 숫자 |
+| sieben | 7, 일곱 | 숫자 |
+| acht | 8, 여덟 | 숫자 |
+| neun | 9, 아홉 | 숫자 |
+| zehn | 10, 열 | 숫자 |
+| elf | 11, 열하나 | 숫자 |
+| zwölf | 12, 열둘 | 숫자 |
+| dreizehn | 13, 열셋 | 숫자 |
+| vierzehn | 14, 열넷 | 숫자 |
+| fünfzehn | 15, 열다섯 | 숫자 |
+| sechzehn | 16, 열여섯 | 숫자; sechs에서 s 빠짐 |
+| siebzehn | 17, 열일곱 | 숫자; sieben에서 en 빠짐 |
+| achtzehn | 18, 열여덟 | 숫자 |
+| neunzehn | 19, 열아홉 | 숫자 |
+| zwanzig | 20, 스물 | 숫자 |
+| einundzwanzig | 21, 스물하나 | 숫자 |
+| zweiundzwanzig | 22, 스물둘 | 숫자 |
+| dreißig | 30, 서른 | 숫자 |
+| vierzig | 40, 마흔 | 숫자 |
+| fünfzig | 50, 쉰 | 숫자 |
+| sechzig | 60, 예순 | 숫자 |
+| siebzig | 70, 일흔 | 숫자 |
+| achtzig | 80, 여든 | 숫자 |
+| neunzig | 90, 아흔 | 숫자 |
+| hundert | 100, 백 | 숫자 |
+| (ein)hunderteins | 101, 백일 | 숫자 |
 
 #### 물건
 

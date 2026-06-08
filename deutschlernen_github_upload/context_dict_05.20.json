@@ -5658,6 +5658,16 @@
       "base": "Beethoven-Haus",
       "mean": "베토벤 하우스",
       "note": "고유명사 복합어"
+    },
+    "Beethoven": {
+      "base": "Beethoven",
+      "mean": "베토벤",
+      "note": "고유명사(인명)"
+    },
+    "Haus": {
+      "base": "Haus",
+      "mean": "건물",
+      "note": "명사, 중성"
     }
   },
   "Entschuldigung, sind Sie von hier?": {
@@ -6247,7 +6257,7 @@
     "Schmidt": {
       "base": "Schmidt",
       "mean": "슈미트",
-      "note": "성(姓)"
+      "note": "성씨"
     },
     "heißen": {
       "base": "heißen",
@@ -7553,6 +7563,16 @@
       "base": "Beethoven-Haus",
       "mean": "베토벤 하우스",
       "note": "고유명사 (복합명사)"
+    },
+    "Beethoven": {
+      "base": "Beethoven",
+      "mean": "베토벤",
+      "note": "고유명사(인명)"
+    },
+    "Haus": {
+      "base": "Haus",
+      "mean": "건물",
+      "note": "명사, 중성"
     }
   },
   "Es ist Viertel nach zwei.": {
@@ -12326,6 +12346,11 @@
       "base": "lang",
       "mean": "더 긴/더 오래",
       "note": "형용사 비교급"
+    },
+    "km": {
+      "base": "km",
+      "mean": "킬로미터",
+      "note": "단위"
     }
   },
   "Neben dem Bett ____ ein Bücherregal.": {
@@ -13116,6 +13141,16 @@
       "base": "Weg",
       "mean": "길",
       "note": "남성 명사 3격"
+    },
+    "Beethoven": {
+      "base": "Beethoven",
+      "mean": "베토벤",
+      "note": "고유명사(인명)"
+    },
+    "Haus": {
+      "base": "Haus",
+      "mean": "건물",
+      "note": "명사, 중성"
     }
   },
   "Sie (그녀) ____ in Hamburg. (wohnen)": {
@@ -13537,341 +13572,341 @@
   "Sie sind immer herzlich ____ .": {
     "Sie": {
       "base": "Sie",
-      "mean": "您",
-      "note": "尊称代词，主格"
+      "mean": "당신",
+      "note": "존칭 대명사, 주격"
     },
     "sind": {
       "base": "sein",
-      "mean": "是",
-      "note": "sein的现在时复数/尊称变位"
+      "mean": "이다",
+      "note": "sein의 현재 복수/존칭 변화"
     },
     "immer": {
       "base": "immer",
-      "mean": "总是",
-      "note": "副词"
+      "mean": "항상",
+      "note": "부사"
     },
     "herzlich": {
       "base": "herzlich",
-      "mean": "热忱地",
-      "note": "副词/形容词"
+      "mean": "진심으로, 따뜻하게",
+      "note": "부사/형용사"
     }
   },
   "Sie vermisst ____ Familie. (sie 그녀, 4격)": {
     "Sie": {
       "base": "sie",
-      "mean": "她",
-      "note": "人称代词主格（句首大写）"
+      "mean": "그녀",
+      "note": "인칭대명사 주격, 문장 첫머리이므로 대문자"
     },
     "vermisst": {
       "base": "vermissen",
-      "mean": "思念",
-      "note": "第三人称单数现在时变位"
+      "mean": "그리워하다",
+      "note": "vermissen의 3인칭 단수 현재형"
     },
     "Familie": {
       "base": "Familie",
-      "mean": "家庭",
-      "note": "阴性名词，第四格宾语"
+      "mean": "가족",
+      "note": "여성명사, 4격 목적어"
     }
   },
   "Sind Sie Student? – ____, ich bin Student(in). / ____, ich bin Architekt(in).": {
     "Sind": {
       "base": "sein",
-      "mean": "是",
-      "note": "sein的第二人称复数尊称或第三人称复数现在时变位（疑问句倒装）"
+      "mean": "이다",
+      "note": "sein의 현재 복수/존칭 변화형 (의문문에서 동사 첫 위치)"
     },
     "Sie": {
       "base": "Sie",
-      "mean": "您",
-      "note": "尊称代词，主格"
+      "mean": "당신",
+      "note": "존칭 대명사, 주격"
     },
     "Student": {
       "base": "Student",
-      "mean": "大学生（男）",
-      "note": "阳性名词，无冠词职业名词"
+      "mean": "학생 (남성)",
+      "note": "남성명사"
     },
     "ich": {
       "base": "ich",
-      "mean": "我",
-      "note": "第一人称主格代词（出现两次，分别在两个选项中）"
+      "mean": "나",
+      "note": "1인칭 주격 대명사"
     },
     "bin": {
       "base": "sein",
-      "mean": "是",
-      "note": "sein的第一人称单数现在时变位（出现两次）"
+      "mean": "이다",
+      "note": "sein의 1인칭 단수 현재형"
     },
     "Student(in)": {
       "base": "Student(in)",
-      "mean": "学生（男/女）",
-      "note": "表示性别不确定，可指Student或Studentin"
+      "mean": "학생 (남/여)",
+      "note": "성별 불명, Student 또는 Studentin"
     },
     "Architekt(in)": {
       "base": "Architekt(in)",
-      "mean": "建筑师（男/女）",
-      "note": "表示性别不确定"
+      "mean": "건축가 (남/여)",
+      "note": "성별 불명"
     }
   },
   "Toll! Segeln macht mir viel Spaß. Die Landschaft ist übrigens auch sehr schön. Machen wir ein paar Fotos von dir?": {
     "Toll": {
       "base": "toll",
-      "mean": "棒极了",
-      "note": "感叹词/形容词"
+      "mean": "대단해",
+      "note": "감탄사/형용사"
     },
     "Segeln": {
       "base": "Segeln",
-      "mean": "帆船运动",
-      "note": "动名词（名词化动词）"
+      "mean": "요트 타기",
+      "note": "동명사 (중성명사)"
     },
     "macht": {
       "base": "machen",
-      "mean": "做",
-      "note": "第三人称单数现在时"
+      "mean": "하다",
+      "note": "machen의 3인칭 단수 현재형"
     },
     "mir": {
       "base": "ich",
-      "mean": "我",
-      "note": "人称代词第三格"
+      "mean": "나에게",
+      "note": "인칭대명사 3격 (간접목적격)"
     },
     "viel": {
       "base": "viel",
-      "mean": "很多",
-      "note": "不定代词/形容词"
+      "mean": "많은",
+      "note": "부정대명사/형용사"
     },
     "Spaß": {
       "base": "Spaß",
-      "mean": "乐趣",
-      "note": "阳性名词，第四格（viel Spaß固定搭配）"
+      "mean": "재미",
+      "note": "남성명사, 4격 (viel Spaß 관용구)"
     },
     "Die": {
       "base": "die",
-      "mean": "这个",
-      "note": "阴性单数主格冠词"
+      "mean": "그",
+      "note": "여성 단수 주격 관사"
     },
     "Landschaft": {
       "base": "Landschaft",
-      "mean": "风景",
-      "note": "阴性名词"
+      "mean": "풍경",
+      "note": "여성명사"
     },
     "ist": {
       "base": "sein",
-      "mean": "是",
-      "note": "第三人称单数现在时"
+      "mean": "이다",
+      "note": "sein의 3인칭 단수 현재형"
     },
     "übrigens": {
       "base": "übrigens",
-      "mean": "顺便说一下",
-      "note": "副词"
+      "mean": "그런데, 참고로",
+      "note": "부사"
     },
     "auch": {
       "base": "auch",
-      "mean": "也",
-      "note": "副词"
+      "mean": "또한",
+      "note": "부사"
     },
     "sehr": {
       "base": "sehr",
-      "mean": "很",
-      "note": "副词"
+      "mean": "매우",
+      "note": "부사"
     },
     "schön": {
       "base": "schön",
-      "mean": "漂亮",
-      "note": "形容词"
+      "mean": "아름다운",
+      "note": "형용사"
     },
     "Machen": {
       "base": "machen",
-      "mean": "做",
-      "note": "动词原形，这里用于疑问句倒装（Machen wir...）"
+      "mean": "하다",
+      "note": "동사 원형, 의문문 도치"
     },
     "wir": {
       "base": "wir",
-      "mean": "我们",
-      "note": "第一人称复数主格代词"
+      "mean": "우리",
+      "note": "1인칭 복수 주격 대명사"
     },
     "ein": {
       "base": "ein",
-      "mean": "一个",
-      "note": "不定冠词，与paar连用表示一些"
+      "mean": "하나의",
+      "note": "부정관사, ein paar 구문"
     },
     "paar": {
       "base": "paar",
-      "mean": "几个",
-      "note": "与ein连用表示一些"
+      "mean": "몇몇",
+      "note": "부정대명사, ein paar"
     },
     "Fotos": {
       "base": "Foto",
-      "mean": "照片",
-      "note": "复数形式"
+      "mean": "사진",
+      "note": "복수형"
     },
     "von": {
       "base": "von",
-      "mean": "从/的",
-      "note": "介词"
+      "mean": "~의",
+      "note": "전치사"
     },
     "dir": {
       "base": "du",
-      "mean": "你",
-      "note": "人称代词第二人称第三格"
+      "mean": "너",
+      "note": "2인칭 단수 여격 대명사"
     }
   },
   "Trinken wir einen ____ ?": {
     "Trinken": {
       "base": "trinken",
-      "mean": "喝",
-      "note": "动词原形，用于疑问句倒装（Trinken wir...）"
+      "mean": "마시다",
+      "note": "동사 원형, 의문문 도치"
     },
     "wir": {
       "base": "wir",
-      "mean": "我们",
-      "note": "第一人称复数主格"
+      "mean": "우리",
+      "note": "1인칭 복수 주격 대명사"
     },
     "einen": {
       "base": "ein",
-      "mean": "一个",
-      "note": "阳性第四格不定冠词"
+      "mean": "하나의",
+      "note": "부정관사, 남성 4격"
     }
   },
   "Und einfach oder hin und zurück?": {
     "Und": {
       "base": "und",
-      "mean": "和",
-      "note": "连词，句首大写"
+      "mean": "그리고",
+      "note": "접속사"
     },
     "einfach": {
       "base": "einfach",
-      "mean": "单程的",
-      "note": "形容词/副词"
+      "mean": "편도",
+      "note": "형용사/부사"
     },
     "oder": {
       "base": "oder",
-      "mean": "或者",
-      "note": "连词"
+      "mean": "또는",
+      "note": "접속사"
     },
     "hin": {
       "base": "hin",
-      "mean": "前往",
-      "note": "副词，与zurück连用表示往返"
+      "mean": "가는",
+      "note": "부사, hin und zurück는 '왕복'"
     },
     "und": {
       "base": "und",
-      "mean": "和",
-      "note": "连词"
+      "mean": "그리고",
+      "note": "접속사"
     },
     "zurück": {
       "base": "zurück",
-      "mean": "返回",
-      "note": "副词"
+      "mean": "돌아오는",
+      "note": "부사"
     }
   },
   "Und wie alt ist deine Schwester?": {
     "Und": {
       "base": "und",
-      "mean": "和",
-      "note": "连词"
+      "mean": "그리고",
+      "note": "접속사"
     },
     "wie": {
       "base": "wie",
-      "mean": "如何",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문 부사"
     },
     "alt": {
       "base": "alt",
-      "mean": "年龄大的",
-      "note": "形容词，wie alt固定表达“多大岁数”"
+      "mean": "나이가 많은",
+      "note": "형용사"
     },
     "ist": {
       "base": "sein",
-      "mean": "是",
-      "note": "第三人称单数现在时"
+      "mean": "이다",
+      "note": "3인칭 단수 현재"
     },
     "deine": {
       "base": "dein",
-      "mean": "你的",
-      "note": "物主代词，阴性单数主格/宾格"
+      "mean": "너의",
+      "note": "소유대명사, 여성 단수 주격/목적격"
     },
     "Schwester": {
       "base": "Schwester",
-      "mean": "姐妹",
-      "note": "阴性名词，主格"
+      "mean": "자매",
+      "note": "여성 명사, 주격"
     }
   },
   "Und wie lange willst du in München bleiben?": {
     "Und": {
       "base": "und",
-      "mean": "和",
-      "note": "连词"
+      "mean": "그리고",
+      "note": "접속사"
     },
     "wie": {
       "base": "wie",
-      "mean": "如何",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "lange": {
       "base": "lang",
-      "mean": "长久",
-      "note": "形容词，wie lange固定表达“多久”"
+      "mean": "오래",
+      "note": "부사, wie lange 구문에서 '얼마나 오래'"
     },
     "willst": {
       "base": "wollen",
-      "mean": "想要",
-      "note": "第二人称单数现在时"
+      "mean": "원하다",
+      "note": "wollen의 2인칭 단수 현재형"
     },
     "du": {
       "base": "du",
-      "mean": "你",
-      "note": "人称代词，主格"
+      "mean": "너",
+      "note": "인칭대명사 주격"
     },
     "in": {
       "base": "in",
-      "mean": "在...里",
-      "note": "介词"
+      "mean": "~에",
+      "note": "전치사"
     },
     "München": {
       "base": "München",
-      "mean": "慕尼黑",
-      "note": "城市名，中性"
+      "mean": "뮌헨",
+      "note": "도시명, 중성"
     },
     "bleiben": {
       "base": "bleiben",
-      "mean": "停留",
-      "note": "动词原形"
+      "mean": "머무르다",
+      "note": "동사 원형"
     }
   },
   "Vermisst du sie?": {
     "Vermisst": {
       "base": "vermissen",
-      "mean": "思念",
-      "note": "第二人称单数现在时变位（du vermisst）"
+      "mean": "그리워하다",
+      "note": "vermissen의 2인칭 단수 현재형 (du vermisst)"
     },
     "du": {
       "base": "du",
-      "mean": "你",
-      "note": "人称代词主格"
+      "mean": "너",
+      "note": "인칭대명사 주격"
     },
     "sie": {
       "base": "sie",
-      "mean": "她",
-      "note": "人称代词第四格（宾语）"
+      "mean": "그녀",
+      "note": "인칭대명사 4격 (목적격)"
     }
   },
   "Vielen Dank. Auf Wiedersehen!": {
     "Vielen": {
       "base": "viel",
-      "mean": "很多",
-      "note": "形容词第四格变形，Vielen Dank固定短语"
+      "mean": "많은",
+      "note": "형용사 4격 변화, Vielen Dank 고정 표현"
     },
     "Dank": {
       "base": "Dank",
-      "mean": "感谢",
-      "note": "阳性名词"
+      "mean": "감사",
+      "note": "남성 명사"
     },
     "Auf": {
       "base": "auf",
-      "mean": "到/在",
-      "note": "介词，Auf Wiedersehen固定短语"
+      "mean": "~에",
+      "note": "전치사, Auf Wiedersehen 고정 표현"
     },
     "Wiedersehen": {
       "base": "Wiedersehen",
-      "mean": "再见",
-      "note": "名词（动名词）"
+      "mean": "재회",
+      "note": "명사 (동명사)"
     }
   },
   "Was machen Sie beruflich? → (was, Sie, beruflich, machen, ?)": {
@@ -14417,311 +14452,311 @@
   "Wie alt ist dein Bruder? – Er ist ____ Jahre alt. (17)": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "얼마나",
+      "note": "의문부사"
     },
     "alt": {
       "base": "alt",
-      "mean": "老的，年龄大的",
-      "note": "形容词，此处作表语"
+      "mean": "나이가 많은",
+      "note": "형용사, 보어로 사용"
     },
     "ist": {
       "base": "sein",
-      "mean": "是",
-      "note": "动词sein的第三人称单数现在时"
+      "mean": "이다",
+      "note": "sein의 3인칭 단수 현재형"
     },
     "dein": {
       "base": "dein",
-      "mean": "你的",
-      "note": "物主代词，阳/中单数第一/四格"
+      "mean": "너의",
+      "note": "소유대명사, 남/중 1/4격"
     },
     "Bruder": {
       "base": "Bruder",
-      "mean": "兄弟",
-      "note": "名词，阳性"
+      "mean": "형제",
+      "note": "명사, 남성"
     },
     "Er": {
       "base": "er",
-      "mean": "他",
-      "note": "人称代词第三称单数主格"
+      "mean": "그",
+      "note": "인칭대명사 3인칭 단수 주격"
     },
     "Jahre": {
       "base": "Jahr",
-      "mean": "年",
-      "note": "名词复数，此处为第四格"
+      "mean": "년",
+      "note": "명사 복수형, 4격"
     }
   },
   "Wie alt ist dein Vater? – Er ist ____ Jahre alt. (49)": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "얼마나",
+      "note": "의문부사"
     },
     "alt": {
       "base": "alt",
-      "mean": "老的，年龄大的",
-      "note": "形容词，此处作表语"
+      "mean": "나이가 많은",
+      "note": "형용사, 보어로 사용"
     },
     "ist": {
       "base": "sein",
-      "mean": "是",
-      "note": "动词sein的第三人称单数现在时"
+      "mean": "이다",
+      "note": "sein의 3인칭 단수 현재형"
     },
     "dein": {
       "base": "dein",
-      "mean": "你的",
-      "note": "物主代词，阳/中单数第一/四格"
+      "mean": "너의",
+      "note": "소유대명사, 남성/중성 단수 1·4격"
     },
     "Vater": {
       "base": "Vater",
-      "mean": "父亲",
-      "note": "名词，阳性"
+      "mean": "아버지",
+      "note": "명사, 남성명사"
     },
     "Er": {
       "base": "er",
-      "mean": "他",
-      "note": "人称代词第三称单数主格"
+      "mean": "그",
+      "note": "인칭대명사 3인칭 단수 주격"
     },
     "Jahre": {
       "base": "Jahr",
-      "mean": "年",
-      "note": "名词复数，此处为第四格"
+      "mean": "년",
+      "note": "명사 복수, 여기서는 4격"
     }
   },
   "Wie gefällt dir die Wohnung?": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "gefällt": {
       "base": "gefallen",
-      "mean": "喜欢，使满意",
-      "note": "动词gefallen的第三人称单数现在时"
+      "mean": "마음에 들다",
+      "note": "동사 gefallen의 3인칭 단수 현재"
     },
     "dir": {
       "base": "du",
-      "mean": "你（与格）",
-      "note": "人称代词第二人称单数与格"
+      "mean": "너에게",
+      "note": "인칭대명사 2인칭 단수 여격"
     },
     "die": {
       "base": "die",
-      "mean": "这/那（定冠词阴性第一/四格）",
-      "note": "定冠词，阴性单数第一格或第四格"
+      "mean": "그 (정관사 여성 1·4격)",
+      "note": "정관사, 여성 단수 1격 또는 4격"
     },
     "Wohnung": {
       "base": "Wohnung",
-      "mean": "公寓",
-      "note": "名词，阴性"
+      "mean": "아파트",
+      "note": "명사, 여성명사"
     }
   },
   "Wie geht es Julia? – Es geht ____ sehr gut.": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "geht": {
       "base": "gehen",
-      "mean": "去，走；用于问候",
-      "note": "动词gehen的第三人称单数现在时，此处用于固定表达"
+      "mean": "가다, 지내다 (인사 표현)",
+      "note": "동사 gehen의 3인칭 단수 현재, 여기서는 고정표현"
     },
     "es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격"
     },
     "Julia": {
       "base": "Julia",
-      "mean": "尤莉亚",
-      "note": "女性名字"
+      "mean": "율리아",
+      "note": "여자 이름"
     },
     "Es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格（句首大写）"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격 (문장 첫머리)"
     },
     "sehr": {
       "base": "sehr",
-      "mean": "很，非常",
-      "note": "程度副词"
+      "mean": "매우",
+      "note": "정도부사"
     },
     "gut": {
       "base": "gut",
-      "mean": "好",
-      "note": "形容词/副词，此处作表语"
+      "mean": "좋다",
+      "note": "형용사/부사, 여기서는 서술어"
     }
   },
   "Wie geht es Peter? – Es geht ____ gut.": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "geht": {
       "base": "gehen",
-      "mean": "去，走；用于问候",
-      "note": "动词gehen的第三人称单数现在时，此处用于固定表达"
+      "mean": "가다, 지내다 (인사 표현)",
+      "note": "동사 gehen의 3인칭 단수 현재, 여기서는 고정표현"
     },
     "es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격"
     },
     "Peter": {
       "base": "Peter",
-      "mean": "彼得",
-      "note": "男性名字"
+      "mean": "페터",
+      "note": "남자 이름"
     },
     "Es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格（句首大写）"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격 (문장 첫머리)"
     },
     "gut": {
       "base": "gut",
-      "mean": "好",
-      "note": "形容词/副词，此处作表语"
+      "mean": "좋다",
+      "note": "형용사/부사, 여기서는 서술어"
     }
   },
   "Wie geht es ____ ? (Sie) – Es geht so.": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "geht": {
       "base": "gehen",
-      "mean": "去，走；用于问候",
-      "note": "动词gehen的第三人称单数现在时，此处用于固定表达"
+      "mean": "가다, 지내다 (인사 표현)",
+      "note": "동사 gehen의 3인칭 단수 현재, 여기서는 고정표현"
     },
     "es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격"
     },
     "Es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格（句首大写）"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격"
     },
     "so": {
       "base": "so",
-      "mean": "如此，这样",
-      "note": "副词"
+      "mean": "그냥",
+      "note": "부사"
     }
   },
   "Wie geht es ____ ? (du) – Danke, ____ geht es gut.": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "geht": {
       "base": "gehen",
-      "mean": "去，走；用于问候",
-      "note": "动词gehen的第三人称单数现在时，此处用于固定表达"
+      "mean": "가다",
+      "note": "동사 3인칭 단수 현재 (인사 표현)"
     },
     "es": {
       "base": "es",
-      "mean": "它",
-      "note": "人称代词第三称单数中性主格"
+      "mean": "그것",
+      "note": "인칭대명사 3인칭 단수 중성 주격"
     },
     "Danke": {
       "base": "Danke",
-      "mean": "谢谢",
-      "note": "感叹词/名词"
+      "mean": "고마워",
+      "note": "감탄사 (또는 명사)"
     },
     "gut": {
       "base": "gut",
-      "mean": "好",
-      "note": "形容词/副词，此处作表语"
+      "mean": "좋다",
+      "note": "형용사/부사 (서술어)"
     }
   },
   "Wie geht's? – Danke, gut. Und ____?": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "geht's": {
       "base": "geht es",
-      "mean": "怎么样（口语缩写）",
-      "note": "口语中'geht es'的缩写"
+      "mean": "어때",
+      "note": "구어체 축약 (geht es의 줄임)"
     },
     "Danke": {
       "base": "Danke",
-      "mean": "谢谢",
-      "note": "感叹词/名词"
+      "mean": "고마워",
+      "note": "감탄사 (또는 명사)"
     },
     "gut": {
       "base": "gut",
-      "mean": "好",
-      "note": "形容词/副词，此处作表语"
+      "mean": "좋다",
+      "note": "형용사/부사 (서술어)"
     },
     "Und": {
       "base": "und",
-      "mean": "和，以及",
-      "note": "连词，句首大写"
+      "mean": "그리고",
+      "note": "접속사"
     }
   },
   "Wie groß ist die Wohnung?": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "groß": {
       "base": "groß",
-      "mean": "大的",
-      "note": "形容词"
+      "mean": "큰",
+      "note": "형용사"
     },
     "ist": {
       "base": "sein",
-      "mean": "是",
-      "note": "动词sein的第三人称单数现在时"
+      "mean": "이다",
+      "note": "동사 sein의 3인칭 단수 현재형"
     },
     "die": {
       "base": "die",
-      "mean": "这/那（定冠词阴性第一/四格）",
-      "note": "定冠词，阴性单数第一格或第四格"
+      "mean": "그",
+      "note": "정관사 (여성, 1격/4격)"
     },
     "Wohnung": {
       "base": "Wohnung",
-      "mean": "公寓",
-      "note": "名词，阴性"
+      "mean": "아파트",
+      "note": "명사 (여성)"
     }
   },
   "Wie heißen Sie? – Ich ____ Monika Maron.": {
     "Wie": {
       "base": "wie",
-      "mean": "如何/多么",
-      "note": "疑问副词"
+      "mean": "어떻게",
+      "note": "의문부사"
     },
     "heißen": {
       "base": "heißen",
-      "mean": "叫做，被称为",
-      "note": "动词原形，此处为复数或尊称变位（Sie heißen）"
+      "mean": "~라고 하다",
+      "note": "동사 원형 (2인칭 존칭/3인칭 복수 현재형)"
     },
     "Sie": {
       "base": "Sie",
-      "mean": "您/他们",
-      "note": "尊称第二人称或第三人称复数主格，此处为尊称"
+      "mean": "당신 (존칭)",
+      "note": "인칭대명사 2인칭 존칭 주격 (또는 3인칭 복수)"
     },
     "Ich": {
       "base": "ich",
-      "mean": "我",
-      "note": "第一人称单数主格"
+      "mean": "나",
+      "note": "인칭대명사 1인칭 단수 주격"
     },
     "Monika": {
       "base": "Monika",
-      "mean": "莫妮卡",
-      "note": "女性名字"
+      "mean": "모니카",
+      "note": "여성 이름 (고유명사)"
     },
     "Maron": {
       "base": "Maron",
-      "mean": "马龙（姓氏）",
-      "note": "姓氏"
+      "mean": "마론",
+      "note": "성씨 (고유명사)"
     }
   },
   "Wie heißt ____ Schwester? (du, 1격)": {
@@ -14802,7 +14837,7 @@
     "Meier": {
       "base": "Meier",
       "mean": "마이어",
-      "note": "성(姓)"
+      "note": "성씨 (고유명사)"
     }
   },
   "Wie ist dein Name? – ____ Name ist Wolfgang Kreft.": {
@@ -14834,7 +14869,7 @@
     "Kreft": {
       "base": "Kreft",
       "mean": "크레프트",
-      "note": "성(姓)"
+      "note": "성씨 (고유명사)"
     }
   },
   "Wie komme ich zum Beethoven-Haus?": {
@@ -14862,6 +14897,16 @@
       "base": "Beethoven-Haus",
       "mean": "베토벤 하우스",
       "note": "고유명사 복합어"
+    },
+    "Beethoven": {
+      "base": "Beethoven",
+      "mean": "베토벤",
+      "note": "고유명사(인명)"
+    },
+    "Haus": {
+      "base": "Haus",
+      "mean": "건물",
+      "note": "명사, 중성"
     }
   },
   "Wie lange dauert denn die Fahrt?": {
@@ -16497,7 +16542,7 @@
     "Braun": {
       "base": "Braun",
       "mean": "브라운",
-      "note": "성(姓)"
+      "note": "성씨"
     }
   },
   "____ hängt das Bild? – Es hängt an der Wand.": {
