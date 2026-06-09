@@ -1594,6 +1594,7 @@ body {
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 16px;
   margin-bottom: 20px;
+  order: 1;
 }
 
 #quiz-title {
@@ -1614,6 +1615,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  order: 3;
   padding-bottom: 20px;
 }
 
@@ -1770,9 +1772,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid var(--border-color);
-  padding-top: 16px;
-  margin-top: auto;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  gap: 12px;
+  margin: 0 0 16px 0;
+  order: 2;
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .quiz-score-panel {
