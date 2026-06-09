@@ -1868,14 +1868,23 @@ ${JSON.stringify(linesToTranslate, null, 2)}
     const currentSubmitBtn = document.getElementById('btn-quiz-submit');
     const newSubmitBtn = currentSubmitBtn.cloneNode(true);
     currentSubmitBtn.parentNode.replaceChild(newSubmitBtn, currentSubmitBtn);
+    newSubmitBtn.style.display = '';
     
     if (hasAnswerKey) {
-      newSubmitBtn.style.display = '';
+      newSubmitBtn.className = 'btn btn-primary';
+      newSubmitBtn.textContent = '정답 확인';
+      newSubmitBtn.disabled = false;
+      newSubmitBtn.removeAttribute('aria-disabled');
+      newSubmitBtn.removeAttribute('title');
       newSubmitBtn.addEventListener('click', () => {
         gradeQuiz(quizObj);
       });
     } else {
-      newSubmitBtn.style.display = 'none';
+      newSubmitBtn.className = 'btn btn-secondary quiz-submit-unavailable';
+      newSubmitBtn.textContent = '답안 없음';
+      newSubmitBtn.disabled = true;
+      newSubmitBtn.setAttribute('aria-disabled', 'true');
+      newSubmitBtn.setAttribute('title', '이 활동은 정답표가 없는 직접 작성형 문제입니다.');
     }
     
     // Reset listener
