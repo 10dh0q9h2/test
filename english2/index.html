@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#256f5b">
+    <title>English Word</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img src="assets/mark.svg" alt="" class="brand-mark">
+          <div>
+            <h1>English Word</h1>
+            <p id="data-source">Loading</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="export-progress" type="button" title="진도 내보내기">
+            <span aria-hidden="true">⇩</span>
+            <span class="sr-only">진도 내보내기</span>
+          </button>
+          <button class="icon-button" id="import-progress" type="button" title="진도 가져오기">
+            <span aria-hidden="true">⇧</span>
+            <span class="sr-only">진도 가져오기</span>
+          </button>
+          <button class="icon-button" id="install-button" type="button" title="설치" hidden>
+            <span aria-hidden="true">＋</span>
+            <span class="sr-only">설치</span>
+          </button>
+          <button class="icon-button danger" id="reset-progress" type="button" title="진도 초기화">
+            <span aria-hidden="true">↺</span>
+            <span class="sr-only">진도 초기화</span>
+          </button>
+        </div>
+      </header>
+      <input id="progress-file" type="file" accept="application/json,.json" hidden>
+
+      <nav class="tabbar" aria-label="주요 화면">
+        <button class="tab active" type="button" data-view="dashboard" aria-selected="true">
+          <span aria-hidden="true">⌂</span><span>대시보드</span>
+        </button>
+        <button class="tab" type="button" data-view="learn" aria-selected="false">
+          <span aria-hidden="true">◫</span><span>학습</span>
+        </button>
+        <button class="tab" type="button" data-view="quiz" aria-selected="false">
+          <span aria-hidden="true">?</span><span>퀴즈</span>
+        </button>
+        <button class="tab" type="button" data-view="wordbook" aria-selected="false">
+          <span aria-hidden="true">⌕</span><span>단어장</span>
+        </button>
+        <button class="tab" type="button" data-view="review" aria-selected="false">
+          <span aria-hidden="true">✓</span><span>복습</span>
+        </button>
+      </nav>
+
+      <main>
+        <section class="view active" id="view-dashboard" aria-labelledby="dashboard-title">
+          <div class="section-header">
+            <div>
+              <h2 id="dashboard-title">대시보드</h2>
+              <p id="today-label"></p>
+            </div>
+            <button class="primary-button" type="button" data-go-view="learn">오늘 학습</button>
+          </div>
+
+          <div class="metric-grid" id="metric-grid"></div>
+
+          <section class="goal-panel" aria-labelledby="daily-goal-title">
+            <div>
+              <h3 id="daily-goal-title">오늘 목표</h3>
+              <p id="daily-goal-detail"></p>
+            </div>
+            <div class="goal-control">
+              <button class="icon-button" id="daily-goal-minus" type="button" title="목표 줄이기">
+                <span aria-hidden="true">−</span>
+                <span class="sr-only">목표 줄이기</span>
+              </button>
+              <label class="goal-input-label">
+                <span class="sr-only">일일 목표</span>
+                <input id="daily-goal-input" type="number" min="1" max="999" step="1">
+              </label>
+              <button class="icon-button" id="daily-goal-plus" type="button" title="목표 늘리기">
+                <span aria-hidden="true">＋</span>
+                <span class="sr-only">목표 늘리기</span>
+              </button>
+            </div>
+            <div class="goal-track" aria-label="오늘 목표 진행률">
+              <span id="daily-goal-bar"></span>
+            </div>
+          </section>
+
+          <div class="dashboard-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h3>단원 진도</h3>
+                <select id="dashboard-unit-filter" aria-label="단원 필터"></select>
+              </div>
+              <div id="unit-progress-list" class="progress-list"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3>오늘 복습</h3>
+                <button class="ghost-button" type="button" data-go-view="review">열기</button>
+              </div>
+              <div id="due-preview" class="compact-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-learn" aria-labelledby="learn-title">
+          <div class="section-header">
+            <div>
+              <h2 id="learn-title">플래시카드</h2>
+              <p id="learn-counter"></p>
+            </div>
+            <div class="toolbar">
+              <select id="learn-unit-filter" aria-label="학습 단원"></select>
+              <button class="ghost-button" type="button" id="shuffle-card">섞기</button>
+            </div>
+          </div>
+
+          <article class="flashcard" id="flashcard" tabindex="0">
+            <div class="flashcard-meta">
+              <span id="card-unit"></span>
+              <span id="card-pos"></span>
+            </div>
+            <div class="flashcard-word" id="card-word"></div>
+            <div class="flashcard-meaning" id="card-meaning"></div>
+            <div class="flashcard-example" id="card-example"></div>
+          </article>
+
+          <div class="card-actions">
+            <button class="secondary-button" type="button" id="flip-card">뒤집기</button>
+            <button class="danger-button" type="button" data-grade="again">모름</button>
+            <button class="primary-button" type="button" data-grade="good">맞음</button>
+            <button class="secondary-button" type="button" data-grade="easy">쉬움</button>
+            <button class="icon-button" type="button" id="favorite-card" title="즐겨찾기">
+              <span aria-hidden="true">☆</span>
+              <span class="sr-only">즐겨찾기</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="view" id="view-quiz" aria-labelledby="quiz-title">
+          <div class="section-header">
+            <div>
+              <h2 id="quiz-title">퀴즈</h2>
+              <p id="quiz-status"></p>
+            </div>
+            <div class="toolbar">
+              <select id="quiz-unit-filter" aria-label="퀴즈 단원"></select>
+              <div class="segmented" role="group" aria-label="퀴즈 유형">
+                <button class="segment active" type="button" data-quiz-mode="choice">선택</button>
+                <button class="segment" type="button" data-quiz-mode="typing">입력</button>
+              </div>
+            </div>
+          </div>
+
+          <section class="quiz-panel">
+            <div class="quiz-word" id="quiz-word"></div>
+            <div class="quiz-sub" id="quiz-sub"></div>
+            <div class="choices" id="quiz-choices"></div>
+            <form class="typing-form" id="typing-form" hidden>
+              <input id="typing-answer" type="text" autocomplete="off" placeholder="뜻 입력">
+              <button class="primary-button" type="submit">확인</button>
+            </form>
+            <div class="quiz-result" id="quiz-result"></div>
+            <button class="secondary-button" type="button" id="next-quiz">다음</button>
+          </section>
+        </section>
+
+        <section class="view" id="view-wordbook" aria-labelledby="wordbook-title">
+          <div class="section-header">
+            <div>
+              <h2 id="wordbook-title">단어장</h2>
+              <p id="wordbook-count"></p>
+            </div>
+            <div class="toolbar">
+              <input id="search-input" type="search" placeholder="검색" autocomplete="off">
+              <select id="wordbook-unit-filter" aria-label="단어장 단원"></select>
+              <div class="segmented wordbook-filter" role="group" aria-label="단어 상태">
+                <button class="segment active" type="button" data-wordbook-status="all">전체</button>
+                <button class="segment" type="button" data-wordbook-status="new">미학습</button>
+                <button class="segment" type="button" data-wordbook-status="due">복습</button>
+                <button class="segment" type="button" data-wordbook-status="wrong">오답</button>
+                <button class="segment" type="button" data-wordbook-status="favorite">즐겨찾기</button>
+                <button class="segment" type="button" data-wordbook-status="mastered">완료</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="word-table" id="word-list"></div>
+        </section>
+
+        <section class="view" id="view-review" aria-labelledby="review-title">
+          <div class="section-header">
+            <div>
+              <h2 id="review-title">복습</h2>
+              <p id="review-count"></p>
+            </div>
+            <div class="toolbar">
+              <button class="ghost-button" type="button" id="review-wrong-only">오답</button>
+              <button class="ghost-button" type="button" id="review-favorites-only">즐겨찾기</button>
+            </div>
+          </div>
+          <div class="review-list" id="review-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
